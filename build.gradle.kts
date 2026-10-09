@@ -26,7 +26,7 @@ dependencies {
     implementation("commons-codec:commons-codec:1.16.0")
     implementation(libs.slf4j.api)
     compileOnly(libs.jetbrains.annotations)
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testImplementation("org.assertj:assertj-core:3.26.3")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")
     directSecurity("org.apache.commons:commons-text:1.9")
