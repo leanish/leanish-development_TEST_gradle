@@ -1,0 +1,10 @@
+{
+  "releaseAgeDays": 7,
+  "ownPackages": {
+    "GitHub Actions": {
+      "owners": [
+        "leanish"
+      ]
+    }
+  }
+}

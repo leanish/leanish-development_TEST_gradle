@@ -1,0 +1,7 @@
+[versions]
+slf4j = "1.7.36"
+annotations = "24.0.1"
+
+[libraries]
+slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version.ref = "annotations" }
