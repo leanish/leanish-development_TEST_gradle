@@ -9,7 +9,7 @@ conflict resolution would otherwise hide vulnerable Text 1.9 behind Text 1.12.0.
 | 2: catalog routine | `gradle/libs.versions.toml:3` and `gradle/libs.versions.toml:7` | JetBrains annotations 24.0.1 -> highest aged safe 24.x in routine (historical 24.1.0); highest eligible newer line in its own major PR. Edit version.ref, preserving alias. | No named baseline advisory expected; live snapshot decides. | Compile-only inventory target exact; comparison/cooldown PASS if aged/safe. |
 | 2: catalog major | `gradle/libs.versions.toml:2` and `gradle/libs.versions.toml:6` | SLF4J 1.7.36 -> highest safe aged 2.x (or newer eligible line) in its own major PR. It is already the historical last stable 1.7 release, so a routine SLF4J move is not guaranteed. Edit the catalog version, not the alias. | No named baseline advisory expected; live snapshot decides. | Resolve the new major; compare/cooldown PASS if safe/aged; inherited security graph findings may remain. |
 | 3: precompiled convention | `buildSrc/src/main/kotlin/fixture.conventions.gradle.kts:10` | Highest aged safe Commons IO 2.x routine move; source indexed and .gradle.kts edit permitted. Root compile/runtime/test locations must all land exactly. | 2.17.0 is the fix for CVE-2024-47554, not an intentional vulnerable baseline. New advisories may add work. | buildSrc and root inventory complete; baseline/updated IO API test PASS. |
-| 5: named plugin | `buildSrc/build.gradle.kts:2` | Move marker 6.0.0 in routine within 6.x; newer major separate. Explicit planned buildSrc plugin move enables unnamed plugin-driven VERSION changes in that build. | Live advisories decide. | Marker resolves; judge every changed injected artifact. Plugin update additions/removals are still rejected by verification. |
+| 5: named plugin | `buildSrc/build.gradle.kts:2` | Move marker 6.0.0 in routine within 6.x; newer major separate. Explicit planned buildSrc plugin move enables unnamed plugin-driven VERSION changes in that build. | Live advisories decide. | Marker resolves; judge every changed injected artifact. v0.2.2 rejects graph additions/removals; B2 can accept them under complete planned-swap proof (see version boundary). |
 | 5: shorthand/injected stdlib | `buildSrc/build.gradle.kts:11` | org.jetbrains.kotlin:kotlin-stdlib absent from coordinate evidence: notes only, NOT a separate move. Same for other unnamed Kotlin DSL injected libraries. Do not expand the shorthand to make a plan land. | Security inventory still includes them. | Existing unnamed modules may follow a planned buildSrc plugin update; independent unplanned changes must fail verification. |
 | 4: direct vulnerability | `build.gradle.kts:32` | Routine highest aged safe 1.x can also fix it; snapshot still governs. | Non-major security PR edits 1.9 to the rule's lowest aged fixing 1.x; historically 1.10.0 for CVE-2022-42889. | Baseline scan FAIL at :directSecurity; compare marks targeted advisory fixed and PASS if no new findings. |
 | 4: transitive vulnerability | `build.gradle.kts:33` (parent); same package also through directSecurity | Never bump the transitive on its own. Parent may have a routine 2.x bump; that does not satisfy this independent secure-it trial. | Commons Lang 3.14.0 (and Text 1.9's lower copy) -> lowest aged fixing 3.x, historically 3.18.0. Add explicit floor dependencies with because naming CVE-2025-48924/GHSA-j288-q9x7-2f5v at every targeted config and create .github/dependency-floors.json. Keep Configuration parent at 2.11.0 in the security plan. | Baseline FAIL in :transitiveSecurity and :directSecurity. Record selectors/declaredIn/version/advisories/purpose=security/reason/added; exact declarations and resolved >=floor must validate. Plain constraints do not satisfy floor contract. |
@@ -121,7 +121,7 @@ PR. A-only verification needs a matching focused plan; a manual edit does not
 magically change the tool's existing plan. Use a local verifier probe or a focused
 review trial in Claude's networked environment, not an invented CLI dry-run flag.
 
-Run the dependencyInsight commands in README.md before/after each probe. Do not
+Run the reproducible probes below and compare their dependencyInsight and inventory outputs. Do not
 freeze tests to a baseline resolved version that legitimate updates should change.
 The strict variant uses -Pfixture.strictLower=true; no strict default is committed.
 If adding a genuinely incompatible hard requirement later, resolution can fail;
@@ -143,3 +143,128 @@ and resolution separately. No full Gradle run is claimed in this sandbox.
 B=4.4.10, including after A=4.5.14. Check any new module metadata/hard constraints
 that could instead make resolution fail. If unresolved, preserve that failure in
 the inventory and report the variant as failed/incomplete; do not ignore it.
+
+## Case 10 reproducible probes
+
+Start from the seeded declarations, not an already-bumped working copy. Install
+Node 24+, JDK 25 for the main toolchain, a supported daemon JVM (JDK 21 here),
+osv-scanner and the supply-chain checkout's dependencies. Network access is needed
+for Gradle, Central, OSV and GitHub. Set GITHUB_TOKEN only if required for private
+Action metadata/rate limits; the helper does not print it.
+
+```sh
+export SC_CHECKOUT="$HOME/.local/share/leanish/supply-chain-v0.2.2"
+# For a post-release rerun, point SC_CHECKOUT at the actual v0.2.3 checkout instead.
+node scripts/case10-probes.mjs --prepare-only
+node scripts/case10-probes.mjs
+```
+
+Each command prints its new `.validation/case10-*` directory. Prepare-only creates
+copies for inspection; the full command creates a fresh, independent set and runs
+it. Nothing modifies the original fixture or creates/uses a Git repository. The
+runner does not call bump-it publication or invent a candidate-selection CLI flag.
+It imports the installed tool's inventory and verifyPlan/runCompare APIs.
+All five copies run check, dependencyInsight and the full inventory export.
+The B-only and A-only copies then use focused exact plans, real declaration
+locations and the tool's full verifier. A second, separate compare invocation
+retains full findings/cooldown; its snapshot can differ from the verifier's first
+snapshot. Nonzero exit means a failure or incomplete probe, not a clean result.
+
+In the printed output directory compare:
+
+| Probe | Edit / command used by helper | What to compare |
+|---|---|---|
+| baseline | No edits; `./gradlew --no-daemon check` and `dependencyInsight --configuration declaredLower --dependency httpcore` | `baseline-inventory.json`, build `.` / `:declaredLower`: declared A=4.5.13, B=4.4.10, resolved B=4.4.13. Check/insight JSON code=0. |
+| b-only | Only ordinary B literal 4.4.10 -> 4.4.12; same commands | `b-only-plan.json` plans ONLY B from 4.4.10. Base/head inventory: declared B changes to 4.4.12, resolved B remains 4.4.13. A unchanged. Verification problems empty; compare failures empty and cooldown evaluated with no held versions, subject to live policy. |
+| a-only | Only A literal 4.5.13 -> 4.5.14, ordinary B unchanged; same commands | `a-only-plan.json` plans ONLY A. Declared B stays 4.4.10; resolved B rises 4.4.13 -> 4.4.16. Verification/compare/cooldown as above; inspect reports to distinguish direct-plan rejection from legitimate security/age failure. |
+| strict | No declaration edit; add `-Pfixture.strictLower=true` to commands/export | Strict B declaration/selected B=4.4.10. Check/insight/inventory must succeed. This is a resolver probe, not a published bump plan. |
+| strict-a-only | Only A=4.5.14; add same strict property | B still strictly 4.4.10 and resolved 4.4.10. If it fails resolution, preserve check/insight process output and inventory failure; do not count an incomplete inventory as a pass. |
+
+All inventory configurations must resolve, including buildSrc. Inspect the
+`*-verification.json`, `*-compare.json` and any `*-error.json` /
+`*-inventory-process-failure.json`; do not use dependencyInsight alone to claim
+verification passed. Generated files in ignored copies are not plan edits. The
+helper records only the one controlled script edit per focused plan; do not make
+manual edits in copies and reuse that assertion of changedFiles. Prepare a new
+probe set instead. Case 10 does not use the plugin-driven exemption, so B1/B2/B3
+are not an excuse for accepting an unplanned case-10 declaration change.
+
+`VERIFY: CASE10-PROBES` — Run the full helper outside the socket-restricted sandbox
+against v0.2.2 and the shipped v0.2.3. Retain all five actual inventories and both
+focused verification/compare reports. Prepare-only and syntax checks do not prove
+resolution or a passing live gate.
+
+## Run acceptance and evidence (cases 8–9 and deferred majors)
+
+EXPECTED.md is the single source of expectations. README.md contains setup and
+entry commands; VALIDATION.md and REGISTRY-EVIDENCE.json contain observed evidence.
+Exact live targets, advisory counts, identities and release dates depend on the
+registry snapshot. A missing or too-young eligible candidate is timing-dependent,
+not proof that the fixture or tool failed. No young release is fabricated.
+
+Run secure-it and bump-it independently against the same seeded main revision;
+capture evidence before merging either tool's PRs. Do not merge parent updates
+before testing transitive security fixes. Preserve the seed revision externally
+for repeat trials; after merges, do not expect the same candidates/findings.
+Unchanged weeks may review already-open PRs rather than create new ones.
+
+bump-it's default maximum is **three new major PRs per run**, in addition to the
+routine unit. An eligible major can be deferred behind higher-priority packages,
+including Actions and the new glob direct dependency. An absent wordwrap,
+annotations, setup-java or other major PR is not a bug solely because it is absent.
+Check the deployed limit and each unit's status/priority; distinguish deferred,
+already-open, held, failed, no eligible candidate and notes-only dependencies.
+Capture later runs (or a deliberately configured larger limit) to exercise every
+eligible major. Never mark a deferred unit as a successful update.
+
+For every run, retain the tool version/commit, configuration, baseline/head IDs,
+complete tool record **including units, waiting, gaps, notes and errors**, candidate
+versions, plan payloads, PR title/body/diff, and verification/build logs. Include
+failed units' attempted plans and diffs even when no PR exists. If the runner does
+not retain a failed plan/diff, report that evidence gap rather than inventing a
+root cause. Preserve inventories for both sides, resolved and declared versions,
+findings fixed/inherited/added, the full compare report, cooldown verdict/held
+versions and CI results. Store scratch evidence in ignored .validation/ or outside
+the repository; no generated diagnostics belong in a remediation PR.
+
+Default-branch scan must fail on the seeded unexcepted advisories. A successful
+fix PR can pass compare with other findings inherited; this does not mean main
+is clean. CLI exit zero, creation of a PR, or a passing smoke test alone is not
+acceptance. Judge every changed resolved artifact for advisories, age and identity.
+Missing registry data/inventory coverage is incomplete, never a clean pass.
+
+`VERIFY: RUN-EVIDENCE` — Confirm the deployed maxNewMajorsPerRun value and retain
+all fields and failed-unit artifacts above in the next weekly report. Reconcile
+all cases against units, not only the published PR list.
+
+## v0.2.2 versus the proposed v0.2.3 fixes
+
+The gate remains pinned to v0.2.2. These are version-specific expectations for
+B1/B2/B3 from the run-1 review, not permission to weaken verification:
+
+| Fix | v0.2.2 behavior | With the reviewed fix in v0.2.3 |
+|---|---|---|
+| B1: capture declarations after resolution | Lazy/default dependencies can appear only on one side of inventory, e.g. Checkstyle at :checkstyle. Apparent declaration additions are not evidence of an actual fixture edit. | Two-phase export resolves configurations before recording declarations, so unchanged default dependencies are recorded consistently. Any unresolved configuration still fails closed. |
+| B2: plugin graph additions/removals | bump-it's planned-swap proof exempts only existing unnamed modules' version changes. Kotlin buildSrc graph removals/additions and Lombok newly present at :testCompileClasspath can reject otherwise mechanical plugin bumps. | Additions/removals of unnamed plugin-driven dependencies can be accepted ONLY in the same build with a planned classpath plugin move, when the whole edit (including file modes) proves nothing but planned swaps and independently verified npm/Action/wrapper bytes changed. Planned declarations must still land exactly. Every added/changed resolved artifact still faces the gate. |
+| B3: secure-it shares the plugin proof | Security verification does not apply bump-it's equivalent plugin-driven proof. Kotlin buildSrc version changes may reject a security plan that includes a plugin move. | Such changes can be accepted under the same complete planned-swap proof when a matching plugin classpath move is actually planned. Security floor insertions are not version swaps: a mixed floor/plugin edit needs its own exact proof; do not assume B3 permits it. |
+
+Ignoring **/.kotlin/ is the fixture repair, not a tool-wide exemption for extra
+edits. No Kotlin error log is present in these local baselines. Previously opened
+PRs containing tracked logs still need those files removed in their own heads;
+adding this ignore rule alone does not remove tracked files. Arbitrary source or
+policy edits, unexplained new/removed files, newly named dependencies, other-build
+changes and missing evidence must continue to fail the plugin-driven proof.
+
+B1 can remove false inventory deltas; B2 is relevant to bump-it's conventions
+major and Gradle routine; B3 is conditionally relevant to security plugin plans.
+Without the failed security plan/diff, do not attribute the observed Checkstyle
+addition entirely to B1 or promise B3 alone makes a floor-bearing PR pass.
+These repairs do not change case-10 declaration versus resolution semantics.
+The independent buildSrc Commons IO convention declaration is a normal project
+dependency, not a classpath plugin trigger; unrelated induced changes still use
+the documented limitation in packages/ci/README.md's Gradle declarations section.
+
+`VERIFY: SUPPLY-CHAIN-0.2.3` — Check the shipped implementation and changelog for
+B1/B2/B3, then rerun tool verification and gate CI with recorded versions. Do not
+claim v0.2.3 behavior from the still-pinned v0.2.2 workflow. Retain failures caused
+by age, advisories, unsupported edits or insufficient proof as failures.

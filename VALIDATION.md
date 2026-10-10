@@ -56,3 +56,22 @@ Claude's networked review and adoption. See every VERIFY item in EXPECTED.md.
   permitted. This does not verify the corrected build; Claude must rerun on JDK 21
   outside the sandbox. Static inspection confirms buildSrc has no toolchain and
   the main build still declares JavaLanguageVersion.of(25).
+
+## Fixture fixes 1–5 — 2026-10-10
+
+- Added **/.kotlin/ to .gitignore. No generated Kotlin error logs were present
+  in the local baseline; the already-published PR logs were not modified.
+- README now points to EXPECTED.md for all expectations. EXPECTED records
+  deferred-major limits, complete evidence requirements and conditional B1/B2/B3
+  behavior at the v0.2.2/v0.2.3 boundary; workflow pins remain unchanged.
+- Actual gate readSettings/parser and YAML parsing accept all policies/workflows.
+- Retried Gradle 9.3.1 offline check on daemon JDK 21 with isolated repository-local
+  caches and temp files. Startup failed at FileLockContentionHandler with
+  java.net.SocketException: Operation not permitted. No build/resolution pass is
+  claimed; see .validation/fixture-fixes/gradle-check.log.
+- node --check scripts/case10-probes.mjs passes. Prepare-only ran successfully;
+  all five copies contain exactly the controlled A-only/B-only or unchanged
+  declarations, executable wrappers, no .git and no copied generated state.
+- The runner calls the installed runGradleInventory, verifyPlan and runCompare
+  APIs; full networked execution is pending. Probe steps and comparisons are
+  specified only in EXPECTED.md.
