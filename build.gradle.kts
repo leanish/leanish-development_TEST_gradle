@@ -23,14 +23,14 @@ val transitiveSecurity by configurations.creating {
 }
 
 dependencies {
-    implementation("commons-codec:commons-codec:1.16.0")
+    implementation("commons-codec:commons-codec:1.22.1")
     implementation(libs.slf4j.api)
     compileOnly(libs.jetbrains.annotations)
-    testImplementation("org.junit.jupiter:junit-jupiter:5.11.0")
-    testImplementation("org.assertj:assertj-core:3.26.3")
-    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.11.0")
-    directSecurity("org.apache.commons:commons-text:1.9")
-    transitiveSecurity("org.apache.commons:commons-configuration2:2.11.0")
+    testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
+    testImplementation("org.assertj:assertj-core:3.27.7")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher:1.14.4")
+    directSecurity("org.apache.commons:commons-text:1.15.0")
+    transitiveSecurity("org.apache.commons:commons-configuration2:2.15.1")
 }
 
 tasks.test {

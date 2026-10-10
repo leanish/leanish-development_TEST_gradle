@@ -1,5 +1,5 @@
 plugins {
-    id("org.gradle.kotlin.kotlin-dsl") version "6.0.0"
+    id("org.gradle.kotlin.kotlin-dsl") version "6.7.11"
 }
 
 repositories {
