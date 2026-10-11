@@ -8,21 +8,14 @@ on:
   schedule:
     - cron: "17 5 * * *"
   workflow_dispatch:
-    inputs:
-      pr:
-        description: Rescan only this open PR now
-        required: false
-        type: string
 
 permissions:
   contents: read
 
 jobs:
   supply-chain:
-    uses: leanish/supply-chain/.github/workflows/supply-chain.yml@20711928aa3074093cdcc8080767c56b1223ae01 # v0.3.0
+    uses: leanish/supply-chain/.github/workflows/supply-chain.yml@3372b20f9353ad19874a72192dcbf5d443ed5d6e # v0.3.1-rc.1
     permissions:
       contents: read
-      pull-requests: read
-      statuses: write
     with:
       java-version: "25"
