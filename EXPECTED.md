@@ -264,6 +264,17 @@ A passing dependency test alone does not prove remediation or reference equality
 | C: combined own and transitive | Separate seed commit changing only OkHttp to 4.9.1 | Normal direct update rules. | One OkHttp 4.9.1 -> 4.12.0 declaration move fixes its own GHSA-3cqm-mf7h-prrj and carries the Okio fix. Do not stop at the own-only 4.9.2 target. | Same complete JVM inventory and reference checks; both advisory groups disappear. |
 | C: search bounds | Reference resolutions for :okhttpSecurity | Not a routine candidate-depth assertion. | Lowest aged eligible parent first; no more than six reference probes for a vulnerable module. A failed/spent search retains a floor with a note. | Retain attempted parent versions and actual reference inventories; a seventh probe is a regression. |
 
+### Seed of 2026-10-11: combined OkHttp and plugin move plus floor
+
+The 4.9.3 baseline above was run first (leanish/test-supply-chain-gradle#12 at
+seed 3078549). This seed changes only OkHttp to 4.9.1 and adds
+`id("org.ajoberstar.grgit") version "5.3.0" apply false` to the root plugins.
+
+| Case | File/configuration | bump-it | secure-it | Gate / inventory |
+|---|---|---|---|---|
+| C: combined own and transitive | build.gradle.kts, :okhttpSecurity, OkHttp 4.9.1 | Normal direct update rules. | One OkHttp 4.9.1 -> 4.12.0 move: its own GHSA-3cqm-mf7h-prrj and the carried Okio fix. Not the own-only 4.9.2. | Both advisory groups disappear from okio/okio-jvm and okhttp. |
+| Plugin move plus floor | build.gradle.kts plugins, `:buildscript.classpath` | Routine may move grgit within 5.x on its own rules. | Grgit 5.3.0 brings JGit 6.10.0.202406032230-r (GHSA-vrpq-qp53-qv56); 5.3.2 brings 6.10.1.202505221210-r. Move the grgit marker 5.3.0 -> 5.3.2 (one reference probe), carrying the JGit fix, in the same security unit as the BeanUtils and kotlin-gradle-plugin floors. No JGit floor. | One reference applies the plugin move and the floors together; head equals it configuration by configuration. |
+
 Use schemaVersion 2 inventories for base, reference and head. Every configuration
 must resolve completely; preserve non-constraint graph edges showing which
 source-named declaration reaches each vulnerable component.
@@ -292,6 +303,19 @@ records untouched. Replace only the original Digester dependency with
 `floorSecurity("commons-beanutils:commons-beanutils:1.11.0")`. A normal
 declaration then supplies the fixed BeanUtils version, and the separate
 floor-removal PR must establish jointly that the floor became redundant.
+
+Done 2026-10-11: secure-it's floor PR was #12 (merged as edccc9f); the
+controlled commit follows it. Expected next: secure-it opens a separate
+floor-removal PR dropping only the because-declaration and the BeanUtils record
+(the kotlin-gradle-plugin floor stays), proved jointly with unlocked resolution.
+
+Observed 2026-10-11 with candidate supply-chain f8dc43f: #12 (seed ab614a7)
+moved OkHttp 4.9.1 -> 4.12.0 (own GHSA-3cqm-mf7h-prrj plus carried Okio and
+Kotlin stdlib) and grgit 5.3.0 -> 5.3.2 (carried JGit) in one security unit with
+the BeanUtils and kotlin-gradle-plugin floors; gate green. After the controlled
+commit 37eecec, #13 removes the BeanUtils floor alone; the kotlin-gradle-plugin
+floor is retained because unlocked resolution restores 2.1.20 (GHSA-r937-wjx7-w2jp).
+Earlier candidates failed that probe on Gradle 9 (fixed in supply-chain#68).
 
 For each independent seed and remediation head:
 
