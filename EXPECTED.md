@@ -69,9 +69,11 @@ registry outcomes, not fixed to the illustrative versions below. npm identity,
 source or provenance breaks can block an otherwise safe version.
 
 Gate trials use the same supply-chain commit for inventory and comparison.
-The gate is pinned to supply-chain v0.3.0
-(20711928aa3074093cdcc8080767c56b1223ae01, 2026-10-11). Earlier trials used the
-candidate commit 87b1e9e, unreachable since its branch was merged.
+The gate is pinned to supply-chain v0.4.0
+(1c236638041cc479ac067b2a4b6143f0e6c2bace, 2026-10-11), which scans only the default branch
+daily and no longer rescans open PRs. Earlier trials used v0.3.0
+(20711928aa3074093cdcc8080767c56b1223ae01) and the candidate commit 87b1e9e,
+unreachable since its branch was merged.
 
 `VERIFY: ACTIONS` — Confirm each exact SHA/tag pair and published release date via
 GitHub (dereference annotated tags). Baseline checkout v4.1.1 is
@@ -158,7 +160,7 @@ Action metadata/rate limits; the helper does not print it.
 
 ```sh
 export SC_CHECKOUT="/Users/leandro.aguiar/dev/repos/leanish/wt-030"
-# For a post-release rerun, point SC_CHECKOUT at the actual v0.3.0 checkout instead.
+# For a post-release rerun, point SC_CHECKOUT at the actual v0.4.0 checkout instead.
 node scripts/case10-probes.mjs --prepare-only
 node scripts/case10-probes.mjs
 ```
