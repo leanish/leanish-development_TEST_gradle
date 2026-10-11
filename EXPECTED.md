@@ -69,10 +69,9 @@ registry outcomes, not fixed to the illustrative versions below. npm identity,
 source or provenance breaks can block an otherwise safe version.
 
 Gate trials use the same supply-chain commit for inventory and comparison.
-The prerelease baseline pins carrier-first-security-fixes commit
-87b1e9e5b54657f668bf9087b81441fb5eb251cc. After v0.3.0 is released, replace
-that pin with its dereferenced release commit and full release-tag comment.
-Do not claim released v0.3.0 behavior from a v0.2.2 workflow.
+The gate is pinned to supply-chain v0.3.0
+(20711928aa3074093cdcc8080767c56b1223ae01, 2026-10-11). Earlier trials used the
+candidate commit 87b1e9e, unreachable since its branch was merged.
 
 `VERIFY: ACTIONS` — Confirm each exact SHA/tag pair and published release date via
 GitHub (dereference annotated tags). Baseline checkout v4.1.1 is
