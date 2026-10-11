@@ -47,7 +47,8 @@ const { runProcess } = await import(source('packages/ci/src/process.ts'));
 const { workingTree } = await import(source('packages/ci/src/tree.ts'));
 const { runGradleInventory, gradleLocation } = await import(source('packages/ci/src/gradle.ts'));
 const { runCompare } = await import(source('packages/ci/src/gate.ts'));
-const { verifyPlan } = await import(source('packages/bump-it/src/verify.ts'));
+const { verifyPlan, referenceMoves } = await import(source('packages/bump-it/src/verify.ts'));
+const { referenceTransform } = await import(source('packages/remediation/src/gradle-reference.ts'));
 await mkdir(join(output, 'tmp'));
 process.env.TMPDIR = join(output, 'tmp');
 const inventories = new Map();
@@ -98,7 +99,26 @@ for (const [variant, artifact, from, to] of [
   await save(`${variant}-plan.json`, plan);
   const head = workingTree(join(output, variant));
   try {
-    const problems = await verifyPlan({ plan, npmFiles: new Map(), base, head, env, gradle,
+    const referenceDir = join(output, `${variant}-reference`);
+    await cp(join(output, 'baseline'), referenceDir, {
+      recursive: true,
+      filter: path => !excluded.has(basename(path)),
+    });
+    const transform = referenceTransform(referenceMoves(plan), []);
+    const inputPath = join(output, `${variant}-reference-input.json`);
+    const input = JSON.stringify(transform.content(referenceDir), null, 2) + '\n';
+    await writeFile(inputPath, input);
+    const reference = await runGradleInventory(
+      referenceDir, ['.'], 'worktree', runProcess, {
+        additionalInitScripts: [transform.initScript],
+        systemProperties: { [transform.property]: inputPath },
+      },
+    );
+    if (await readFile(inputPath, 'utf8') !== input) {
+      throw new Error('Reference transform input changed during inventory');
+    }
+    await save(`${variant}-reference-inventory.json`, reference);
+    const problems = await verifyPlan({ plan, npmFiles: new Map(), base, head, env, gradle, reference,
       changedFiles: [script], modeChanged: [] });
     await save(`${variant}-verification.json`, { problems });
     if (problems.length) failed = true;
