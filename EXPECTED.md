@@ -9,17 +9,19 @@ conflict resolution would otherwise hide vulnerable Text 1.9 behind Text 1.12.0.
 | 2: catalog routine | `gradle/libs.versions.toml:3` and `gradle/libs.versions.toml:7` | JetBrains annotations 24.0.1 -> highest aged safe 24.x in routine (historical 24.1.0); highest eligible newer line in its own major PR. Edit version.ref, preserving alias. | No named baseline advisory expected; live snapshot decides. | Compile-only inventory target exact; comparison/cooldown PASS if aged/safe. |
 | 2: catalog major | `gradle/libs.versions.toml:2` and `gradle/libs.versions.toml:6` | SLF4J 1.7.36 -> highest safe aged 2.x (or newer eligible line) in its own major PR. It is already the historical last stable 1.7 release, so a routine SLF4J move is not guaranteed. Edit the catalog version, not the alias. | No named baseline advisory expected; live snapshot decides. | Resolve the new major; compare/cooldown PASS if safe/aged; inherited security graph findings may remain. |
 | 3: precompiled convention | `buildSrc/src/main/kotlin/fixture.conventions.gradle.kts:10` | Highest aged safe Commons IO 2.x routine move; source indexed and .gradle.kts edit permitted. Root compile/runtime/test locations must all land exactly. | 2.17.0 is the fix for CVE-2024-47554, not an intentional vulnerable baseline. New advisories may add work. | buildSrc and root inventory complete; baseline/updated IO API test PASS. |
-| 5: named plugin | `buildSrc/build.gradle.kts:2` | Move marker 6.0.0 in routine within 6.x; newer major separate. Explicit planned buildSrc plugin move enables unnamed plugin-driven VERSION changes in that build. | Live advisories decide. | Marker resolves; judge every changed injected artifact. v0.2.2 rejects graph additions/removals; B2 can accept them under complete planned-swap proof (see version boundary). |
+| 5: named plugin | `buildSrc/build.gradle.kts:2` | Move marker 6.0.0 in routine within 6.x; newer major separate. Explicit planned buildSrc plugin move enables unnamed plugin-driven VERSION changes in that build. | Live advisories decide. | Marker resolves; compare head with the plan-applied Gradle reference, including injected graph additions/removals. Judge every changed artifact. Missing or differing reference evidence fails. |
 | 5: shorthand/injected stdlib | `buildSrc/build.gradle.kts:11` | org.jetbrains.kotlin:kotlin-stdlib absent from coordinate evidence: notes only, NOT a separate move. Same for other unnamed Kotlin DSL injected libraries. Do not expand the shorthand to make a plan land. | Security inventory still includes them. | Existing unnamed modules may follow a planned buildSrc plugin update; independent unplanned changes must fail verification. |
-| 4: direct vulnerability | `build.gradle.kts:32` | Routine highest aged safe 1.x can also fix it; snapshot still governs. | Non-major security PR edits 1.9 to the rule's lowest aged fixing 1.x; historically 1.10.0 for CVE-2022-42889. | Baseline scan FAIL at :directSecurity; compare marks targeted advisory fixed and PASS if no new findings. |
-| 4: transitive vulnerability | `build.gradle.kts:33` (parent); same package also through directSecurity | Never bump the transitive on its own. Parent may have a routine 2.x bump; that does not satisfy this independent secure-it trial. | Commons Lang 3.14.0 (and Text 1.9's lower copy) -> lowest aged fixing 3.x, historically 3.18.0. Add explicit floor dependencies with because naming CVE-2025-48924/GHSA-j288-q9x7-2f5v at every targeted config and create .github/dependency-floors.json. Keep Configuration parent at 2.11.0 in the security plan. | Baseline FAIL in :transitiveSecurity and :directSecurity. Record selectors/declaredIn/version/advisories/purpose=security/reason/added; exact declarations and resolved >=floor must validate. Plain constraints do not satisfy floor contract. |
-| 4: floor lifecycle | Future build.gradle.kts declarations + .github/dependency-floors.json (no baseline file/line) | Do not raise or remove a recorded floor. | Initially retain: removing it restores vulnerable Lang. After parent/Text updates make it unnecessary, a SEPARATE floor-removal PR is allowed only after joint unlocked proof. | No targeted advisory remains in any copy after a successful fix/removal. |
+| 4: Text plus carried Lang | build.gradle.kts, :directSecurity | Highest aged safe Text 1.x in routine; no independent transitive Lang bump. | Move Text 1.9 -> 1.14.0 for the named snapshot, combining Text's own GHSA-599f-7c49-w659 fix with its carried Lang GHSA-j288-q9x7-2f5v fix. Text 1.14.0 requests Lang 3.18.0. | Baseline declares Text only and resolves Lang 3.11. Head declares Text at the selected parent target and resolves fixed Lang. No Lang floor for this successful parent search. |
+| 4: Configuration plus carried Lang | build.gradle.kts, :transitiveSecurity | Highest aged safe Configuration 2.x; no independent Lang bump. | Move Configuration 2.11.0 -> 2.15.0 for the named current snapshot. Its own GHSA-337m-mw94-2v6g requires >=2.15.0; this move also brings Lang 3.20.0. | Source-named Configuration declaration moves; Lang advisory disappears. Do not retain the obsolete expectation that Configuration stays at 2.11.0 or that this location necessarily receives a Lang floor. |
+| 4: real floor fallback | build.gradle.kts, :floorSecurity | No eligible newer stable Digester 3.x parent expected; recorded floors are not routine bump targets. | Digester 3.2 brings BeanUtils 1.8.3. With no newer eligible parent, add the lowest fixing BeanUtils security floor, 1.11.0 for GHSA-wxr5-93ph-8wr9 and the named snapshot. Record the failed parent-search reason. Additional vulnerable transitives receive their own justified work. | Explicit dependency with because naming all targeted advisories, plus matching .github/dependency-floors.json record. Exact declaration and resolution >=floor must validate. No constraints-only repair. |
+| 4: floor lifecycle | Future :floorSecurity declarations and .github/dependency-floors.json | Do not raise/remove security floors. | Immediately after the floor lands, retain it: unlocked resolution restores vulnerable BeanUtils through Digester 3.2. After the controlled parent-replacement commit below, propose a separate floor-removal PR only after joint unlocked proof. | Safe locked/resolved bytes alone do not justify removal. The reference after removal must match the edited head, retain complete resolution and leave no targeted advisory. |
 
-The intended secure-it non-major batch fixes Text and every failing Lang copy;
-full scan then passes for these two named advisories. Additional live findings may
-remain or require separate units; compare can pass with inherited findings. There
-must be no Lang declaration/floor on the initial baseline: it is genuinely
-transitive and can be checked in the inventory's declared/resolved lists.
+The intended security batch combines each source-named parent's own remediation
+with the Lang remediation it carries. The distinct Lang 3.11 and 3.14 baseline
+findings need not share one parent. No Lang declaration/floor belongs on the
+initial baseline. The isolated Digester graph preserves genuine floor insertion,
+retention and removal coverage after successful parent remediation consumes the
+old Lang-floor case.
 
 Advisory sources:
 - [CVE-2022-42889 / GHSA-599f-7c49-w659](https://github.com/advisories/GHSA-599f-7c49-w659): Text 1.5..1.9 affected; 1.10.0 patch.
@@ -66,8 +68,11 @@ Routine and major exact targets, advisory counts and extra security units are li
 registry outcomes, not fixed to the illustrative versions below. npm identity,
 source or provenance breaks can block an otherwise safe version.
 
-Gate: pinned to the supply-chain v0.2.2 release commit `a8c3f1010bc321ab3c45603eb5600ff9dda7ff3a` (`# v0.2.2`), as the
-other adopters are.
+Gate trials use the same supply-chain commit for inventory and comparison.
+The prerelease baseline pins carrier-first-security-fixes commit
+87b1e9e5b54657f668bf9087b81441fb5eb251cc. After v0.3.0 is released, replace
+that pin with its dereferenced release commit and full release-tag comment.
+Do not claim released v0.3.0 behavior from a v0.2.2 workflow.
 
 `VERIFY: ACTIONS` — Confirm each exact SHA/tag pair and published release date via
 GitHub (dereference annotated tags). Baseline checkout v4.1.1 is
@@ -153,8 +158,8 @@ for Gradle, Central, OSV and GitHub. Set GITHUB_TOKEN only if required for priva
 Action metadata/rate limits; the helper does not print it.
 
 ```sh
-export SC_CHECKOUT="$HOME/.local/share/leanish/supply-chain-v0.2.2"
-# For a post-release rerun, point SC_CHECKOUT at the actual v0.2.3 checkout instead.
+export SC_CHECKOUT="/Users/leandro.aguiar/dev/repos/leanish/wt-030"
+# For a post-release rerun, point SC_CHECKOUT at the actual v0.3.0 checkout instead.
 node scripts/case10-probes.mjs --prepare-only
 node scripts/case10-probes.mjs
 ```
@@ -190,8 +195,8 @@ probe set instead. Case 10 does not use the plugin-driven exemption, so B1/B2/B3
 are not an excuse for accepting an unplanned case-10 declaration change.
 
 `VERIFY: CASE10-PROBES` — Run the full helper outside the socket-restricted sandbox
-against v0.2.2 and the shipped v0.2.3. Retain all five actual inventories and both
-focused verification/compare reports. Prepare-only and syntax checks do not prove
+against the v0.3.0 candidate and the shipped v0.3.0. Retain all five actual inventories, both
+focused verification/compare reports and each variant's `*-reference-inventory.json`. Prepare-only and syntax checks do not prove
 resolution or a passing live gate.
 
 ## Run acceptance and evidence (cases 8–9 and deferred majors)
@@ -237,34 +242,65 @@ Missing registry data/inventory coverage is incomplete, never a clean pass.
 all fields and failed-unit artifacts above in the next weekly report. Reconcile
 all cases against units, not only the published PR list.
 
-## v0.2.2 versus the proposed v0.2.3 fixes
+## supply-chain 0.3.0 verification
 
-The gate remains pinned to v0.2.2. These are version-specific expectations for
-B1/B2/B3 from the run-1 review, not permission to weaken verification:
+| Behavior | Expected result |
+|---|---|
+| Declarations after resolution | Lazy/default plugin declarations are captured consistently after all configurations resolve. Missing or unresolved coverage remains incomplete/failing. |
+| Planned plugin graph changes | Base with the plan applied by Gradle supplies the reference. Head declarations and resolved modules must match it configuration by configuration, including additions/removals and versionless declarations. Every changed/added module still faces the gate. |
+| Security plugin move plus floor | Both planned changes are applied to the same reference. Accept faithful combined fallout; reject differences from that reference. The obsolete version-swap proof is not the acceptance mechanism. |
+| Plugin-declared vulnerable dependency | When no eligible source-named declaration can carry its fix, secure-it adds an explicit because dependency and matching security-floor record next to the plugin declaration. Report the unsuccessful parent search. Do not edit an injected declaration as if the consumer sources held it. |
+| Unsupported plugin defaults/strict versions | A floor that changes defaults beyond the reference contract or cannot resolve against a strict declaration remains a failure. Do not suppress it. |
 
-| Fix | v0.2.2 behavior | With the reviewed fix in v0.2.3 |
-|---|---|---|
-| B1: capture declarations after resolution | Lazy/default dependencies can appear only on one side of inventory, e.g. Checkstyle at :checkstyle. Apparent declaration additions are not evidence of an actual fixture edit. | Two-phase export resolves configurations before recording declarations, so unchanged default dependencies are recorded consistently. Any unresolved configuration still fails closed. |
-| B2: plugin graph additions/removals | bump-it's planned-swap proof exempts only existing unnamed modules' version changes. Kotlin buildSrc graph removals/additions and Lombok newly present at :testCompileClasspath can reject otherwise mechanical plugin bumps. | Additions/removals of unnamed plugin-driven dependencies can be accepted ONLY in the same build with a planned classpath plugin move, when the whole edit (including file modes) proves nothing but planned swaps and independently verified npm/Action/wrapper bytes changed. Planned declarations must still land exactly. Every added/changed resolved artifact still faces the gate. |
-| B3: secure-it shares the plugin proof | Security verification does not apply bump-it's equivalent plugin-driven proof. Kotlin buildSrc version changes may reject a security plan that includes a plugin move. | Such changes can be accepted under the same complete planned-swap proof when a matching plugin classpath move is actually planned. Security floor insertions are not version swaps: a mixed floor/plugin edit needs its own exact proof; do not assume B3 permits it. |
+Ignored Kotlin diagnostics do not remove already tracked files. Preserve complete
+base/reference/head inventories, plans, findings, cooldown and build evidence.
+A passing dependency test alone does not prove remediation or reference equality.
 
-Ignoring **/.kotlin/ is the fixture repair, not a tool-wide exemption for extra
-edits. No Kotlin error log is present in these local baselines. Previously opened
-PRs containing tracked logs still need those files removed in their own heads;
-adding this ignore rule alone does not remove tracked files. Arbitrary source or
-policy edits, unexplained new/removed files, newly named dependencies, other-build
-changes and missing evidence must continue to fail the plugin-driven proof.
+## C: Gradle parent remediation
 
-B1 can remove false inventory deltas; B2 is relevant to bump-it's conventions
-major and Gradle routine; B3 is conditionally relevant to security plugin plans.
-Without the failed security plan/diff, do not attribute the observed Checkstyle
-addition entirely to B1 or promise B3 alone makes a floor-bearing PR pass.
-These repairs do not change case-10 declaration versus resolution semantics.
-The independent buildSrc Commons IO convention declaration is a normal project
-dependency, not a classpath plugin trigger; unrelated induced changes still use
-the documented limitation in packages/ci/README.md's Gradle declarations section.
+| Variant | File/configuration | bump-it | secure-it | Gate / inventory |
+|---|---|---|---|---|
+| C: transitive only | build.gradle.kts, :okhttpSecurity, OkHttp 4.9.3 seed | Highest eligible aged safe OkHttp 4.x in routine; no direct Okio bump. | Move source-named OkHttp 4.9.3 -> 4.12.0, carrying the Okio GHSA-w33c-445m-f8w7 fix. No Okio floor for a successful search. | Baseline resolves vulnerable Okio 2.8.0. Reference/head resolve the fixed JVM graph at 3.6.0 and contain no targeted advisory under either okio or okio-jvm. |
+| C: combined own and transitive | Separate seed commit changing only OkHttp to 4.9.1 | Normal direct update rules. | One OkHttp 4.9.1 -> 4.12.0 declaration move fixes its own GHSA-3cqm-mf7h-prrj and carries the Okio fix. Do not stop at the own-only 4.9.2 target. | Same complete JVM inventory and reference checks; both advisory groups disappear. |
+| C: search bounds | Reference resolutions for :okhttpSecurity | Not a routine candidate-depth assertion. | Lowest aged eligible parent first; no more than six reference probes for a vulnerable module. A failed/spent search retains a floor with a note. | Retain attempted parent versions and actual reference inventories; a seventh probe is a regression. |
 
-`VERIFY: SUPPLY-CHAIN-0.2.3` — Check the shipped implementation and changelog for
-B1/B2/B3, then rerun tool verification and gate CI with recorded versions. Do not
-claim v0.2.3 behavior from the still-pinned v0.2.2 workflow. Retain failures caused
-by age, advisories, unsupported edits or insufficient proof as failures.
+Use schemaVersion 2 inventories for base, reference and head. Every configuration
+must resolve completely; preserve non-constraint graph edges showing which
+source-named declaration reaches each vulnerable component.
+
+With Gradle Module Metadata, the fixed JVM graph must include the selected
+com.squareup.okio:okio-jvm:3.6.0 component. Retain any okio:3.6.0 component and
+redirect/dependency edges that Gradle actually exports. Do not require a synthetic
+okio node if the selected-component model exports only its JVM replacement.
+
+The parent declaration is com.squareup.okhttp3:okhttp; neither Okio artifact is
+a manually added baseline declaration. Scan every selected component, including
+okio-jvm and Kotlin modules. POM requests alone are not inventory proof.
+
+OkHttp 4.10.0 brings Okio 3.0.0 and 4.11.0 brings 3.2.0; these remain vulnerable.
+An artifact-name change or disappearance of the old okio coordinate is not
+successful remediation if the advisory survives on okio-jvm. The verifier checks
+carried advisories on replacement coordinates too.
+
+Run the 4.9.3 and 4.9.1 baselines independently; do not put both versions in
+different configurations/builds and expect this planner to move them separately.
+
+### Controlled floor-removal lifecycle commit
+
+After the tool's floor PR is merged, leave its generated floor declarations and
+records untouched. Replace only the original Digester dependency with
+`floorSecurity("commons-beanutils:commons-beanutils:1.11.0")`. A normal
+declaration then supplies the fixed BeanUtils version, and the separate
+floor-removal PR must establish jointly that the floor became redundant.
+
+For each independent seed and remediation head:
+
+```sh
+./gradlew --no-daemon check
+./gradlew --no-daemon dependencyInsight --configuration okhttpSecurity --dependency okio
+./gradlew --no-daemon dependencyInsight --configuration transitiveSecurity --dependency commons-lang3
+./gradlew --no-daemon dependencyInsight --configuration floorSecurity --dependency commons-beanutils
+```
+
+Capture the tool's complete inventories as well. `dependencyInsight` alone does
+not establish reference verification.
