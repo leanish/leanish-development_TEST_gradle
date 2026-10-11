@@ -49,7 +49,7 @@ dependencies {
 
     directSecurity("org.apache.commons:commons-text:1.9")
     transitiveSecurity("org.apache.commons:commons-configuration2:2.11.0")
-    okhttpSecurity("com.squareup.okhttp3:okhttp:4.9.3")
+    okhttpSecurity("com.squareup.okhttp3:okhttp:5.5.0")
     floorSecurity("org.apache.commons:commons-digester3:3.2") {
         exclude(group = "cglib", module = "cglib")
     }
