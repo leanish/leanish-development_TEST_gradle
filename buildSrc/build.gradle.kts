@@ -1,7 +1,7 @@
 buildscript {
     dependencies {
         classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:2.4.20") {
-            because("GHSA-r937-wjx7-w2jp: replace vulnerable Kotlin Gradle plugin brought by Kotlin DSL")
+            because("GHSA-r937-wjx7-w2jp: the Kotlin DSL plugin brings a vulnerable Kotlin Gradle plugin")
         }
     }
 }

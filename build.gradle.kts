@@ -5,6 +5,7 @@ import org.gradle.api.attributes.Usage
 plugins {
     `java-library`
     id("fixture.conventions")
+    id("org.ajoberstar.grgit") version "5.3.2" apply false
 }
 
 repositories {
@@ -54,7 +55,7 @@ dependencies {
         exclude(group = "cglib", module = "cglib")
     }
     floorSecurity(libs.commons.beanutils) {
-        because("GHSA-6phf-73q6-gh87, GHSA-p66x-2cv9-qq3v, GHSA-wxr5-93ph-8wr9: replace vulnerable BeanUtils brought by Digester")
+        because("GHSA-6phf-73q6-gh87, GHSA-p66x-2cv9-qq3v, GHSA-wxr5-93ph-8wr9: commons-digester3 brings vulnerable BeanUtils")
     }
 }
 
