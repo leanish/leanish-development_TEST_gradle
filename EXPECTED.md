@@ -309,6 +309,14 @@ controlled commit follows it. Expected next: secure-it opens a separate
 floor-removal PR dropping only the because-declaration and the BeanUtils record
 (the kotlin-gradle-plugin floor stays), proved jointly with unlocked resolution.
 
+Observed 2026-10-11 with candidate supply-chain f8dc43f: #12 (seed ab614a7)
+moved OkHttp 4.9.1 -> 4.12.0 (own GHSA-3cqm-mf7h-prrj plus carried Okio and
+Kotlin stdlib) and grgit 5.3.0 -> 5.3.2 (carried JGit) in one security unit with
+the BeanUtils and kotlin-gradle-plugin floors; gate green. After the controlled
+commit 37eecec, #13 removes the BeanUtils floor alone; the kotlin-gradle-plugin
+floor is retained because unlocked resolution restores 2.1.20 (GHSA-r937-wjx7-w2jp).
+Earlier candidates failed that probe on Gradle 9 (fixed in supply-chain#68).
+
 For each independent seed and remediation head:
 
 ```sh
