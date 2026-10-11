@@ -1,0 +1,26 @@
+{
+  "floors": [
+    {
+      "ecosystem": "Maven",
+      "package": "commons-beanutils:commons-beanutils",
+      "version": "1.11.0",
+      "declaredIn": "build.gradle.kts",
+      "selector": [":floorSecurity"],
+      "purpose": "security",
+      "advisories": ["GHSA-6phf-73q6-gh87", "GHSA-p66x-2cv9-qq3v", "GHSA-wxr5-93ph-8wr9"],
+      "reason": "Digester 3.2 brings vulnerable BeanUtils; no eligible newer stable Digester 3.x parent was selected, so apply the planned BeanUtils floor.",
+      "added": "2026-10-11"
+    },
+    {
+      "ecosystem": "Maven",
+      "package": "org.jetbrains.kotlin:kotlin-gradle-plugin",
+      "version": "2.4.20",
+      "declaredIn": "buildSrc/build.gradle.kts",
+      "selector": ["buildSrc/:buildscript.classpath"],
+      "purpose": "security",
+      "advisories": ["GHSA-r937-wjx7-w2jp"],
+      "reason": "The Kotlin DSL plugin brings vulnerable Kotlin Gradle plugin 2.1.20; apply the planned buildscript classpath floor.",
+      "added": "2026-10-11"
+    }
+  ]
+}
