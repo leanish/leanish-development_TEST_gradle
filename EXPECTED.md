@@ -304,6 +304,11 @@ records untouched. Replace only the original Digester dependency with
 declaration then supplies the fixed BeanUtils version, and the separate
 floor-removal PR must establish jointly that the floor became redundant.
 
+Done 2026-10-11: secure-it's floor PR was #12 (merged as edccc9f); the
+controlled commit follows it. Expected next: secure-it opens a separate
+floor-removal PR dropping only the because-declaration and the BeanUtils record
+(the kotlin-gradle-plugin floor stays), proved jointly with unlocked resolution.
+
 For each independent seed and remediation head:
 
 ```sh
