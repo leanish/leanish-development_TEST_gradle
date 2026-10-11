@@ -5,6 +5,7 @@ import org.gradle.api.attributes.Usage
 plugins {
     `java-library`
     id("fixture.conventions")
+    id("org.ajoberstar.grgit") version "5.3.0" apply false
 }
 
 repositories {
@@ -49,7 +50,7 @@ dependencies {
 
     directSecurity("org.apache.commons:commons-text:1.9")
     transitiveSecurity("org.apache.commons:commons-configuration2:2.11.0")
-    okhttpSecurity("com.squareup.okhttp3:okhttp:4.9.3")
+    okhttpSecurity("com.squareup.okhttp3:okhttp:4.9.1")
     floorSecurity("org.apache.commons:commons-digester3:3.2") {
         exclude(group = "cglib", module = "cglib")
     }
