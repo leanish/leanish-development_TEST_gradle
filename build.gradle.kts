@@ -41,7 +41,7 @@ val floorSecurity by configurations.creating {
 }
 
 dependencies {
-    implementation("commons-codec:commons-codec:1.22.1")
+    implementation("commons-codec:commons-codec:1.23.0")
     implementation(libs.slf4j.api)
     compileOnly(libs.jetbrains.annotations)
     testImplementation("org.junit.jupiter:junit-jupiter:5.14.4")
