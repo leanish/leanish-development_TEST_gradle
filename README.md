@@ -9,8 +9,9 @@ a wrapper, pinned Actions and ordinary/strict declared-lower dependencies.
 ```
 
 Use a Gradle daemon on JDK 21 with JDK 25 installed for the main toolchain.
-buildSrc uses the daemon JVM. The security inputs are isolated in directSecurity
-and transitiveSecurity; case 10 uses declaredLower. Tests exercise benign APIs;
+buildSrc uses the daemon JVM. Security inputs are isolated in directSecurity,
+transitiveSecurity, okhttpSecurity and floorSecurity; case 10 uses declaredLower.
+The two OkHttp baselines are separate seed commits, as documented in EXPECTED.md. Tests exercise benign APIs;
 no vulnerability is exploited and HttpClient does not perform network I/O.
 
 For the independent case-10 probes, run the commands in
@@ -21,4 +22,5 @@ and collect real inventories, plans, checks and verifier/gate reports.
 acceptance steps, timing caveats and VERIFY items. [VALIDATION.md](VALIDATION.md)
 records checks already performed. These private repositories are test inputs;
 do not publish packages. Claude manages GitHub adoption and weekly configuration.
-The existing gate workflow remains pinned to supply-chain v0.2.2.
+Gate adoption uses the same supply-chain commit for inventory and comparison;
+see EXPECTED.md for the prerelease pin and released v0.3.0 acceptance.
