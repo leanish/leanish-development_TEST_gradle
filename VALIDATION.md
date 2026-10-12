@@ -95,3 +95,17 @@ Baseline and probe evidence only; no tool run yet. Each probe copied the seed wo
 
 Starting state for the tool runs: #9 and #7 open, green, `adaptations=1` of 2; no SnakeYAML
 PR yet. Tool-run outcomes go below when recorded.
+
+### Cases 11–12 tool runs — 2026-10-12 (supply-chain v0.4.2, seed `33755fc`)
+
+- **Case 12, secure-it `run`:** published [#14](https://github.com/leanish/supply-chain_TEST_gradle/pull/14)
+  (`org.yaml:snakeyaml-major`, snakeyaml 1.33 -> 2.0 for GHSA-mjmj-j48q-9wg2). Its agent adapted
+  `FixtureYaml` in `apply` to `new Constructor(FixtureConfig.class, new LoaderOptions())`; tests untouched.
+  Build green; the next secure-it `review` marked it ready (head `9d8696b`). ~USD 0.16 + 0.11.
+- **Case 11, bump-it `review` (1st):** rebased #4–#11 onto the seed; #7 and #9 then failed Build
+  (#9 `compileTestJava`, #7 `:test`), as probed.
+- **Case 11, bump-it `review` (2nd):** `adapted` #7 and #9 (`adaptations=2` of 2): each replaced
+  `MethodOrderer.Alphanumeric` with `MethodName` and dropped the `@SuppressWarnings`, changing only its own
+  dependency. Build green on both; later reviews (with `agent-fixtures.yaml`) marked #7 (`97c6026`) and #9
+  (`d1172fe`) ready. ~USD 0.33.
+- Both seeds' expected paths ran: review-mode `adapt` for bump-it, adaptation during `apply` for secure-it.
