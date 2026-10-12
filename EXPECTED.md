@@ -267,7 +267,7 @@ A passing dependency test alone does not prove remediation or reference equality
 
 ### Seed of 2026-10-11: combined OkHttp and plugin move plus floor
 
-The 4.9.3 baseline above was run first (leanish/test-supply-chain-gradle#12 at
+The 4.9.3 baseline above was run first (leanish/supply-chain_TEST_gradle#12 at
 seed 3078549). This seed changes only OkHttp to 4.9.1 and adds
 `id("org.ajoberstar.grgit") version "5.3.0" apply false` to the root plugins.
 
@@ -329,3 +329,19 @@ For each independent seed and remediation head:
 
 Capture the tool's complete inventories as well. `dependencyInsight` alone does
 not establish reference verification.
+
+## Cases 11–12: majors that need source adaptation
+
+Added 2026-10-12. Every other major here changes only dependency files; these two seed code
+that a dependency-only upgrade breaks, so the tool's agent must adapt it. An adaptation keeps
+the behaviour the tests assert: deleting a test, the annotation or the YAML loading is not one.
+
+| Case | File/line | bump-it | secure-it | Gate |
+|---|---|---|---|---|
+| 11: JUnit major breaks a test | `src/test/java/example/fixture/OrderedTest.java` (`MethodOrderer.Alphanumeric`, removed in JUnit 6.0; JUnit's default order runs `beta` first, so the asserted order needs an orderer) | Open #9 (junit-jupiter 5.11.0 -> 6.1.3) merges the new base cleanly, then its Build fails at `compileTestJava`; the next review runs the agent in `adapt` with that failing check and switches to `MethodOrderer.MethodName` (or an equivalent that keeps the asserted order), then marks it ready once green. #9 started this case at `adaptations=1` of 2, so it has one attempt. #7 (junit-platform-launcher -> 6.1.3) compiles but fails at test runtime (the BOM raises Jupiter on the runtime classpath only); expect the same adapt path or a visible failure. Don't merge #7 or #9 before collecting both outcomes. | No advisory expected. | Inventory/compare don't compile sources: require the Build check separately. |
+| 12: security fix only in a new major | `src/main/java/example/fixture/FixtureYaml.java` (`new Constructor(FixtureConfig.class)`), `build.gradle.kts` (`org.yaml:snakeyaml:1.33`) | Also a future major candidate (1.33 -> newest aged 2.x); not part of this case. | CVE-2022-1471 / GHSA-mjmj-j48q-9wg2 affects <=1.33 and is fixed only in 2.0 (lowest fix). One major security PR to 2.0 whose agent, in `apply` with major effort, adapts the constructor to `Constructor(FixtureConfig.class, new LoaderOptions())` (that overload exists in 1.33 too) and keeps `FixtureYamlTest` green. This covers adaptation during the initial apply; review-mode `adapt` for secure-it would need a dependency-only major PR first and the break landing on main afterwards (not seeded). | Main's scheduled scan reports the SnakeYAML advisory until the fix lands; the fix PR must clear it at every location, with unrelated findings inherited. Require the Build check too. |
+
+Probe evidence for the seed is in [VALIDATION.md](VALIDATION.md#cases-1112-seed--2026-10-12).
+Advisory and release dates: [GHSA-mjmj-j48q-9wg2](https://github.com/advisories/GHSA-mjmj-j48q-9wg2);
+SnakeYAML 1.33 2022-09-26, 2.0 2023-02-26; `MethodOrderer.Alphanumeric` is absent from
+junit-jupiter-api 6.1.3.
