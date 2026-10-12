@@ -75,3 +75,23 @@ Claude's networked review and adoption. See every VERIFY item in EXPECTED.md.
 - The runner calls the installed runGradleInventory, verifyPlan and runCompare
   APIs; full networked execution is pending. Probe steps and comparisons are
   specified only in EXPECTED.md.
+
+## Cases 11–12 seed — 2026-10-12
+
+Baseline and probe evidence only; no tool run yet. Each probe copied the seed working tree
+(the commit adding cases 11–12 on top of `b578cc7`), applied one edit and ran
+`./gradlew --no-daemon check` (JDK 21 daemon, JDK 25 toolchain):
+
+| Probe | Result |
+|---|---|
+| Baseline | Pass (OrderedTest 3 tests, FixtureYamlTest 1) |
+| `@TestMethodOrder` removed | Fails `:test`: ran `beta, alpha, charlie` (default order), expected alphabetical |
+| junit-jupiter 6.1.3 only (#9's plan) | Fails `compileTestJava`: `cannot find symbol` `MethodOrderer.Alphanumeric` |
+| junit-platform-launcher 6.1.3 only (#7's plan) | Fails `:test`: discovery can't load `MethodOrderer$Alphanumeric` (the BOM raises Jupiter at runtime) |
+| snakeyaml 2.0 only | Fails `compileJava`: `Class<FixtureConfig> cannot be converted to LoaderOptions` |
+| jupiter 6.1.3 + `MethodName` (launcher kept at 1.11.0) | Pass |
+| launcher 6.1.3 + `MethodName` (jupiter kept at 5.11.0) | Pass |
+| snakeyaml 2.0 + `Constructor(FixtureConfig.class, new LoaderOptions())` | Pass |
+
+Starting state for the tool runs: #9 and #7 open, green, `adaptations=1` of 2; no SnakeYAML
+PR yet. Tool-run outcomes go below when recorded.
