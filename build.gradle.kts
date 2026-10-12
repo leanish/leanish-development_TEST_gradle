@@ -43,6 +43,7 @@ val floorSecurity by configurations.creating {
 dependencies {
     implementation("commons-codec:commons-codec:1.16.0")
     implementation(libs.slf4j.api)
+    implementation("org.yaml:snakeyaml:1.33")
     compileOnly(libs.jetbrains.annotations)
     testImplementation("org.junit.jupiter:junit-jupiter:6.1.3")
     testImplementation("org.assertj:assertj-core:3.27.7")
