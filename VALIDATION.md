@@ -15,6 +15,8 @@ Each record below states how far its evidence goes:
 | Digester restore and replace | 2026-10-11 | seed commits only; outcome not recorded | none | 721b17b, 59f168d |
 | Cases 11–12 seed | 2026-10-12 | seed/probe verified | none | seed 33755fc |
 | Cases 11–12 tool runs | 2026-10-12 | real tool run verified | v0.4.2 | #14 (9d8696b), #7 (97c6026), #9 (d1172fe) |
+| Case 17 seed | 2026-10-12 | seed/probe verified | none | seed cb3abe4 |
+| Case 17 tool run | 2026-10-12 | real tool run verified | v0.4.2 | #14 (b38a70d) |
 
 The 2026-10-09 line-reference check no longer held after #12 and 37eecec moved lines;
 EXPECTED.md's references were corrected on 2026-10-12.
