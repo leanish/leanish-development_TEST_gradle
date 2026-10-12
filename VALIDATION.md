@@ -120,8 +120,9 @@ EXPECTED.md on 2026-10-12, and was checked against the git history then.
   floor is retained because unlocked resolution restores 2.1.20 (GHSA-r937-wjx7-w2jp). The
   kept record's arrays are reformatted (whitespace only). Earlier candidates failed that
   probe on Gradle 9 (fixed in supply-chain#68).
-- **#13 on 2026-10-12:** open and unmerged. Its branch head 774c128 merges main at 33755fc.
-  Its CI result isn't recorded here.
+- **#13 on 2026-10-12:** open and unmerged. Its branch head 774c128 merged main at 33755fc;
+  after later reviews rebased it onto `cb3abe4`, it was ready (not a draft) at head `ae5a45f`
+  with all its checks green (observed in the evening; real tool run verified).
 - **Digester restore and replace:** 721b17b (09:45 +03:00) put Digester 3.2 back next to the
   floor, "to show its BeanUtils floor is kept"; 59f168d (09:46) replaced it again. Outcome not
   recorded: no tool commit or run record exists between the two commits.
