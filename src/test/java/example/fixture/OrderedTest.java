@@ -10,12 +10,11 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestMethodOrder;
 
 /**
- * Case 11: {@code MethodOrderer.Alphanumeric} was deprecated in JUnit 5.7 and removed in 6.0, so bump-it's
- * JUnit major has to adapt this test. The order is asserted, and JUnit's default order (by name hash) puts beta
- * first, so dropping the orderer or the test isn't an adaptation.
+ * Case 11: {@code MethodOrderer.Alphanumeric} was deprecated in JUnit 5.7 and removed in 6.0.
+ * MethodOrderer.MethodName preserves the same order on both JUnit 5 and 6. The order is asserted, and
+ * JUnit's default order (by name hash) puts beta first, so an explicit orderer is required.
  */
-@SuppressWarnings("deprecation")
-@TestMethodOrder(MethodOrderer.Alphanumeric.class)
+@TestMethodOrder(MethodOrderer.MethodName.class)
 class OrderedTest {
     private static final List<String> RAN = new ArrayList<>();
 
