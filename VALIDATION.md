@@ -165,3 +165,13 @@ Probes on copies (JDK 21 daemon, JDK 25 toolchain): the seed passes on SnakeYAML
 at `FixtureYamlDump.java:16` (`constructor Representer in class Representer cannot be
 applied to given types`); with `new Representer(options)` it passes. Tool-run outcomes go
 below when recorded.
+
+### Case 17 tool run — 2026-10-12 (real tool run verified; supply-chain v0.4.2, seed `cb3abe4`)
+
+secure-it `review` (with `agent-fixtures.yaml`), three ticks about eight minutes apart:
+1. [#14](https://github.com/leanish/supply-chain_TEST_gradle/pull/14) `rebased` onto `cb3abe4`
+   (clean merge); Build then failed on head `3a77bc4` (`compileJava`, `Representer()`).
+2. `adapted` (attempt 1 of 2): the agent switched `FixtureYamlDump` to
+   `new Representer(options)`, keeping `FixtureYamlDumpTest`; Build green on head `b38a70d`.
+   ~USD 0.09 + 0.19.
+3. `marked-ready` (the rebase had turned it back into a draft).
