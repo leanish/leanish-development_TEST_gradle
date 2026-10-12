@@ -1,4 +1,25 @@
-# Local validation — 2026-10-09
+# Validation
+
+Each record below states how far its evidence goes:
+
+- **seed/probe verified**: the seed, or a local probe of it, was checked; no tool ran.
+- **real tool run verified**: a real secure-it or bump-it run produced it.
+
+| Record | Date | Evidence state | Tool version | PRs / heads |
+|---|---|---|---|---|
+| Local validation | 2026-10-09 | seed/probe verified (static checks only; Gradle couldn't start in the sandbox) | not recorded | none |
+| Case 10 addition | 2026-10-09 | seed/probe verified (synthetic inventories; no Gradle resolution) | not recorded | none |
+| Claude networked review and JVM correction | 2026-10-09 | seed/probe verified | not recorded | none |
+| Fixture fixes 1–5 | 2026-10-10 | seed/probe verified (prepare-only probes; no Gradle run) | not recorded | none |
+| Parent-first, plugin-move and floor runs | 2026-10-11 | real tool run verified | candidate f8dc43f | #12 (merged as edccc9f), #13 (open) |
+| Digester restore and replace | 2026-10-11 | seed commits only; outcome not recorded | none | 721b17b, 59f168d |
+| Cases 11–12 seed | 2026-10-12 | seed/probe verified | none | seed 33755fc |
+| Cases 11–12 tool runs | 2026-10-12 | real tool run verified | v0.4.2 | #14 (9d8696b), #7 (97c6026), #9 (d1172fe) |
+
+The 2026-10-09 line-reference check no longer held after #12 and 37eecec moved lines;
+EXPECTED.md's references were corrected on 2026-10-12.
+
+## Local validation — 2026-10-09
 
 - YAML parsed with the gate checkout's yaml library; workflow events verified.
 - .github/supply-chain.json accepted by the gate's actual readSettings/parser.
@@ -64,6 +85,8 @@ Claude's networked review and adoption. See every VERIFY item in EXPECTED.md.
 - README now points to EXPECTED.md for all expectations. EXPECTED records
   deferred-major limits, complete evidence requirements and conditional B1/B2/B3
   behavior at the v0.2.2/v0.2.3 boundary; workflow pins remain unchanged.
+  (Historical: 0.3.0 replaced that mechanism with the plan-applied Gradle reference,
+  and v0.2.3 was never released. EXPECTED.md now describes the reference.)
 - Actual gate readSettings/parser and YAML parsing accept all policies/workflows.
 - Retried Gradle 9.3.1 offline check on daemon JDK 21 with isolated repository-local
   caches and temp files. Startup failed at FileLockContentionHandler with
@@ -75,6 +98,31 @@ Claude's networked review and adoption. See every VERIFY item in EXPECTED.md.
 - The runner calls the installed runGradleInventory, verifyPlan and runCompare
   APIs; full networked execution is pending. Probe steps and comparisons are
   specified only in EXPECTED.md.
+
+## Parent-first, plugin-move and floor runs — 2026-10-11
+
+Real tool runs with candidate supply-chain f8dc43f. This record moved here from
+EXPECTED.md on 2026-10-12, and was checked against the git history then.
+
+- **secure-it #12** (seed ab614a7) moved OkHttp 4.9.1 -> 4.12.0 (own GHSA-3cqm-mf7h-prrj
+  plus carried Okio and Kotlin stdlib) and grgit 5.3.0 -> 5.3.2 (carried JGit) in one
+  security unit with the BeanUtils and kotlin-gradle-plugin floors; gate green. Merged as
+  edccc9f. The merged diff also moves Text 1.9 -> 1.14.0 and Configuration 2.11.0 -> 2.15.0
+  (the case-4 targets in EXPECTED.md) and AssertJ 3.26.3 -> 3.27.7. The BeanUtils floor is
+  1.11.0 for GHSA-6phf-73q6-gh87, GHSA-p66x-2cv9-qq3v and GHSA-wxr5-93ph-8wr9; its record
+  names the failed parent search. The advisory reports behind the Text, Configuration and
+  AssertJ moves aren't recorded here.
+- **Controlled commit 37eecec** replaced Digester with a plain BeanUtils 1.11.0 declaration.
+- **secure-it #13** (branch `secure-it/2026-10-11-floor-removal`, change 06ece51) removes the
+  BeanUtils floor alone: its because-declaration and its record. The kotlin-gradle-plugin
+  floor is retained because unlocked resolution restores 2.1.20 (GHSA-r937-wjx7-w2jp). The
+  kept record's arrays are reformatted (whitespace only). Earlier candidates failed that
+  probe on Gradle 9 (fixed in supply-chain#68).
+- **#13 on 2026-10-12:** open and unmerged. Its branch head 774c128 merges main at 33755fc.
+  Its CI result isn't recorded here.
+- **Digester restore and replace:** 721b17b (09:45 +03:00) put Digester 3.2 back next to the
+  floor, "to show its BeanUtils floor is kept"; 59f168d (09:46) replaced it again. Outcome not
+  recorded: no tool commit or run record exists between the two commits.
 
 ## Cases 11–12 seed — 2026-10-12
 
@@ -109,3 +157,11 @@ PR yet. Tool-run outcomes go below when recorded.
   dependency. Build green on both; later reviews (with `agent-fixtures.yaml`) marked #7 (`97c6026`) and #9
   (`d1172fe`) ready. ~USD 0.33.
 - Both seeds' expected paths ran: review-mode `adapt` for bump-it, adaptation during `apply` for secure-it.
+
+## Case 17 seed — 2026-10-12 (seed/probe verified)
+
+Probes on copies (JDK 21 daemon, JDK 25 toolchain): the seed passes on SnakeYAML 1.33;
+#14's state (SnakeYAML 2.0 with `FixtureYaml` adapted) plus the seed fails `compileJava`
+at `FixtureYamlDump.java:16` (`constructor Representer in class Representer cannot be
+applied to given types`); with `new Representer(options)` it passes. Tool-run outcomes go
+below when recorded.
