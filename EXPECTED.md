@@ -2,19 +2,21 @@
 
 Baseline authored 2026-10-09. Case 4 graphs must remain separate: normal Gradle
 conflict resolution would otherwise hide vulnerable Text 1.9 behind Text 1.12.0.
+Case 4's seeds are consumed on current main; see
+[Active cases and consumed seeds](#active-cases-and-consumed-seeds).
 
 | Case | File/line | bump-it | secure-it | Gate |
 |---|---|---|---|---|
-| 2: literal routine | `build.gradle.kts:26` | Highest aged safe 1.x in routine; no code change expected for encodeHexString. | No named baseline advisory expected; live snapshot decides. | Changed artifact aged/safe => comparison PASS; unrelated fixture findings inherited. |
-| 2: catalog routine | `gradle/libs.versions.toml:3` and `gradle/libs.versions.toml:7` | JetBrains annotations 24.0.1 -> highest aged safe 24.x in routine (historical 24.1.0); highest eligible newer line in its own major PR. Edit version.ref, preserving alias. | No named baseline advisory expected; live snapshot decides. | Compile-only inventory target exact; comparison/cooldown PASS if aged/safe. |
-| 2: catalog major | `gradle/libs.versions.toml:2` and `gradle/libs.versions.toml:6` | SLF4J 1.7.36 -> highest safe aged 2.x (or newer eligible line) in its own major PR. It is already the historical last stable 1.7 release, so a routine SLF4J move is not guaranteed. Edit the catalog version, not the alias. | No named baseline advisory expected; live snapshot decides. | Resolve the new major; compare/cooldown PASS if safe/aged; inherited security graph findings may remain. |
+| 2: literal routine | `build.gradle.kts:44` | Highest aged safe 1.x in routine; no code change expected for encodeHexString. | No named baseline advisory expected; live snapshot decides. | Changed artifact aged/safe => comparison PASS; unrelated fixture findings inherited. |
+| 2: catalog routine | `gradle/libs.versions.toml:3` and `gradle/libs.versions.toml:8` | JetBrains annotations 24.0.1 -> highest aged safe 24.x in routine (historical 24.1.0); highest eligible newer line in its own major PR. Edit version.ref, preserving alias. | No named baseline advisory expected; live snapshot decides. | Compile-only inventory target exact; comparison/cooldown PASS if aged/safe. |
+| 2: catalog major | `gradle/libs.versions.toml:2` and `gradle/libs.versions.toml:7` | SLF4J 1.7.36 -> highest safe aged 2.x (or newer eligible line) in its own major PR. It is already the historical last stable 1.7 release, so a routine SLF4J move is not guaranteed. Edit the catalog version, not the alias. | No named baseline advisory expected; live snapshot decides. | Resolve the new major; compare/cooldown PASS if safe/aged; inherited security graph findings may remain. |
 | 3: precompiled convention | `buildSrc/src/main/kotlin/fixture.conventions.gradle.kts:10` | Highest aged safe Commons IO 2.x routine move; source indexed and .gradle.kts edit permitted. Root compile/runtime/test locations must all land exactly. | 2.17.0 is the fix for CVE-2024-47554, not an intentional vulnerable baseline. New advisories may add work. | buildSrc and root inventory complete; baseline/updated IO API test PASS. |
-| 5: named plugin | `buildSrc/build.gradle.kts:2` | Move marker 6.0.0 in routine within 6.x; newer major separate. Explicit planned buildSrc plugin move enables unnamed plugin-driven VERSION changes in that build. | Live advisories decide. | Marker resolves; compare head with the plan-applied Gradle reference, including injected graph additions/removals. Judge every changed artifact. Missing or differing reference evidence fails. |
-| 5: shorthand/injected stdlib | `buildSrc/build.gradle.kts:11` | org.jetbrains.kotlin:kotlin-stdlib absent from coordinate evidence: notes only, NOT a separate move. Same for other unnamed Kotlin DSL injected libraries. Do not expand the shorthand to make a plan land. | Security inventory still includes them. | Existing unnamed modules may follow a planned buildSrc plugin update; independent unplanned changes must fail verification. |
-| 4: Text plus carried Lang | build.gradle.kts, :directSecurity | Highest aged safe Text 1.x in routine; no independent transitive Lang bump. | Move Text 1.9 -> 1.14.0 for the named snapshot, combining Text's own GHSA-599f-7c49-w659 fix with its carried Lang GHSA-j288-q9x7-2f5v fix. Text 1.14.0 requests Lang 3.18.0. | Baseline declares Text only and resolves Lang 3.11. Head declares Text at the selected parent target and resolves fixed Lang. No Lang floor for this successful parent search. |
-| 4: Configuration plus carried Lang | build.gradle.kts, :transitiveSecurity | Highest aged safe Configuration 2.x; no independent Lang bump. | Move Configuration 2.11.0 -> 2.15.0 for the named current snapshot. Its own GHSA-337m-mw94-2v6g requires >=2.15.0; this move also brings Lang 3.20.0. | Source-named Configuration declaration moves; Lang advisory disappears. Do not retain the obsolete expectation that Configuration stays at 2.11.0 or that this location necessarily receives a Lang floor. |
-| 4: real floor fallback | build.gradle.kts, :floorSecurity | No eligible newer stable Digester 3.x parent expected; recorded floors are not routine bump targets. | Digester 3.2 brings BeanUtils 1.8.3. With no newer eligible parent, add the lowest fixing BeanUtils security floor, 1.11.0 for GHSA-wxr5-93ph-8wr9 and the named snapshot. Record the failed parent-search reason. Additional vulnerable transitives receive their own justified work. | Explicit dependency with because naming all targeted advisories, plus matching .github/dependency-floors.json record. Exact declaration and resolution >=floor must validate. No constraints-only repair. |
-| 4: floor lifecycle | Future :floorSecurity declarations and .github/dependency-floors.json | Do not raise/remove security floors. | Immediately after the floor lands, retain it: unlocked resolution restores vulnerable BeanUtils through Digester 3.2. After the controlled parent-replacement commit below, propose a separate floor-removal PR only after joint unlocked proof. | Safe locked/resolved bytes alone do not justify removal. The reference after removal must match the edited head, retain complete resolution and leave no targeted advisory. |
+| 5: named plugin | `buildSrc/build.gradle.kts:10` | Move marker 6.0.0 in routine within 6.x; newer major separate. A planned buildSrc plugin move may change unnamed plugin-injected versions in that build, as its plan-applied reference shows. | Live advisories decide. | Marker resolves; compare head with the plan-applied Gradle reference, including injected graph additions/removals. Judge every changed artifact. Missing or differing reference evidence fails. |
+| 5: shorthand/injected stdlib | `buildSrc/build.gradle.kts:19` | org.jetbrains.kotlin:kotlin-stdlib absent from coordinate evidence: notes only, NOT a separate move. Same for other unnamed Kotlin DSL injected libraries. Do not expand the shorthand to make a plan land. | Security inventory still includes them. | Existing unnamed modules may follow a planned buildSrc plugin update; independent unplanned changes must fail verification. |
+| 4: Text plus carried Lang (consumed seed) | build.gradle.kts, :directSecurity | Highest aged safe Text 1.x in routine; no independent transitive Lang bump. | Move Text 1.9 -> 1.14.0 for the named snapshot, combining Text's own GHSA-599f-7c49-w659 fix with its carried Lang GHSA-j288-q9x7-2f5v fix. Text 1.14.0 requests Lang 3.18.0. | Baseline declares Text only and resolves Lang 3.11. Head declares Text at the selected parent target and resolves fixed Lang. No Lang floor for this successful parent search. |
+| 4: Configuration plus carried Lang (consumed seed) | build.gradle.kts, :transitiveSecurity | Highest aged safe Configuration 2.x; no independent Lang bump. | Move Configuration 2.11.0 -> 2.15.0 for the named current snapshot. Its own GHSA-337m-mw94-2v6g requires >=2.15.0; this move also brings Lang 3.20.0. | Source-named Configuration declaration moves; Lang advisory disappears. Do not retain the obsolete expectation that Configuration stays at 2.11.0 or that this location necessarily receives a Lang floor. |
+| 4: real floor fallback (consumed seed) | build.gradle.kts, :floorSecurity | No eligible newer stable Digester 3.x parent expected; recorded floors are not routine bump targets. | Digester 3.2 brings BeanUtils 1.8.3. With no newer eligible parent, add the lowest fixing BeanUtils security floor, 1.11.0 for GHSA-wxr5-93ph-8wr9 and the named snapshot. Record the failed parent-search reason. Additional vulnerable transitives receive their own justified work. | Explicit dependency with because naming all targeted advisories, plus matching .github/dependency-floors.json record. Exact declaration and resolution >=floor must validate. No constraints-only repair. |
+| 4: floor lifecycle | `build.gradle.kts:56` (:floorSecurity floor) and .github/dependency-floors.json, both added by #12 | Do not raise/remove security floors. | Immediately after the floor lands, retain it: unlocked resolution restores vulnerable BeanUtils through Digester 3.2. After the controlled parent-replacement commit below, propose a separate floor-removal PR only after joint unlocked proof. | Safe locked/resolved bytes alone do not justify removal. The reference after removal must match the edited head, retain complete resolution and leave no targeted advisory. |
 
 The intended security batch combines each source-named parent's own remediation
 with the Lang remediation it carries. The distinct Lang 3.11 and 3.14 baseline
@@ -52,11 +54,52 @@ required Java 25. Its explicit toolchain is now removed; rerun baseline check an
 tools inventory on daemon JDK 21 with the main Java 25 toolchain installed.
 Local Gradle execution was blocked by the sandbox's socket restriction.
 
+## Active cases and consumed seeds
+
+Current main holds the seeds of cases 2, 3, 5, 6, 8, 9, 10, 11, 12 and 17. It also
+holds the BeanUtils and Kotlin Gradle plugin security floors that #12 added; the
+floor-removal PR #13 was open on 2026-10-12.
+
+secure-it's #12 (merged as edccc9f on 2026-10-11) consumed the seeds below. A run on
+current main can't reproduce them.
+
+| Case | Seeded by | Main now |
+|---|---|---|
+| 4: Text plus carried Lang | 315fb0c: Text 1.9 | Text 1.14.0 |
+| 4: Configuration plus carried Lang | 315fb0c: Configuration 2.11.0 | Configuration 2.15.0 |
+| 4: real floor fallback | 3078549: Digester 3.2 | Plain BeanUtils 1.11.0 (37eecec) plus #12's BeanUtils floor |
+| C: transitive only | 3078549: OkHttp 4.9.3 | OkHttp 4.12.0 |
+| C: combined own and transitive | ab614a7: OkHttp 4.9.1 | OkHttp 4.12.0 |
+| Plugin move plus floor | ab614a7: grgit 5.3.0 | grgit 5.3.2 plus #12's Kotlin Gradle plugin floor |
+
+To re-seed them on main:
+
+1. Record the outcome of the open floor-removal PR #13 first: re-seeding moves main under it.
+2. In `build.gradle.kts`, restore the seed declarations:
+   - in `plugins`: `id("org.ajoberstar.grgit") version "5.3.0" apply false`;
+   - `directSecurity("org.apache.commons:commons-text:1.9")`;
+   - `transitiveSecurity("org.apache.commons:commons-configuration2:2.11.0")`;
+   - `okhttpSecurity("com.squareup.okhttp3:okhttp:4.9.1")`, or `4.9.3` for "C: transitive only"
+     (run the two baselines separately);
+   - replace `floorSecurity("commons-beanutils:commons-beanutils:1.11.0")` with
+     `floorSecurity("org.apache.commons:commons-digester3:3.2") { exclude(group = "cglib", module = "cglib") }`.
+3. Remove the generated floors, so secure-it has to add them again:
+   - the `floorSecurity(libs.commons.beanutils) { because(...) }` declaration in `build.gradle.kts`;
+   - `beanutils` under `[versions]` and `commons-beanutils` under `[libraries]` in `gradle/libs.versions.toml`;
+   - the `buildscript { ... }` block declaring `kotlin-gradle-plugin:2.4.20` in `buildSrc/build.gradle.kts`;
+   - `.github/dependency-floors.json` (it holds only these two records: delete the file).
+4. Keep the rest of main as it is, such as SnakeYAML 1.33 (33755fc) and AssertJ 3.27.7 (#12).
+   The three build files at ab614a7 show the whole seed state, but don't check them out
+   wholesale: they predate those changes.
+5. Run `./gradlew --no-daemon check`, commit the seed and name its commit in VALIDATION.md.
+   After secure-it's floor PR merges, repeat the controlled commit below (37eecec) to
+   re-seed the floor removal.
+
 ## Shared gate and action checks
 
 | Case | File/line | bump-it | secure-it | Gate |
 |---|---|---|---|---|
-| Gate adoption | `.github/workflows/supply-chain.yml:22` | Own Action update may join routine/major according to release line; repin before trials. | Only if an advisory has a selected fix. | Daily scan, PR compare, open-PR rescan; require supply-chain and cooldown after repin. |
+| Gate adoption | `.github/workflows/supply-chain.yml:15` | Own Action update may join routine/major according to release line; repin before trials. | Only if an advisory has a selected fix. | PR compare; default-branch scan on push to main and manual dispatch. No schedule (removed 2026-10-12) and no open-PR rescan (removed in gate 0.4.0). Require supply-chain and cooldown. |
 | 8: checkout pin | `.github/workflows/ci.yml:16` | Routine: highest eligible v4 release and matching commit/comment; separate major for highest eligible newer line. | No fixed security expectation; live advisories decide. | Changed SHA must match its full release tag comment and aged release; otherwise FAIL. |
 | 8: Java setup pin | `.github/workflows/ci.yml:19` | Routine v4 refresh and separate newer-major PR when eligible; preserve JDK 25 input. | Live advisories decide. | Same SHA/tag/age checks. |
 
@@ -70,8 +113,10 @@ source or provenance breaks can block an otherwise safe version.
 
 Gate trials use the same supply-chain commit for inventory and comparison.
 The gate is pinned to supply-chain v0.4.0
-(1c236638041cc479ac067b2a4b6143f0e6c2bace, 2026-10-11), which scans only the default branch
-daily and no longer rescans open PRs. Earlier trials used v0.3.0
+(1c236638041cc479ac067b2a4b6143f0e6c2bace, 2026-10-11). It runs on pull requests,
+pushes to main and manual dispatch. It has no schedule (removed 2026-10-12) and,
+since v0.4.0, no open-PR rescan. The tools are at v0.4.2; tool-only releases don't
+need a gate repin. Earlier trials used v0.3.0
 (20711928aa3074093cdcc8080767c56b1223ae01) and the candidate commit 87b1e9e,
 unreachable since its branch was merged.
 
@@ -94,7 +139,7 @@ directly by WrapperGenerator from the cached 9.3.1 distribution.
 `VERIFY: WRAPPER` — Select and verify the live wrapper target with the tool; do
 not invent a fixed latest version. When preparing adoption, optionally add the
 official 9.3.1 binary distribution checksum.
-A wrapper-only move is not the pluginDriven exemption; if embedded dependencies
+A wrapper-only move is not a planned plugin move; if embedded dependencies
 change without a planned plugin move and verification rejects them, record a
 regression/failure rather than adding dependency declarations to bypass it.
 
@@ -105,11 +150,11 @@ regression/failure rather than adding dependency declarations to bypass it.
 |---|---|---|---|---|
 | A baseline | `declared-lower.gradle.kts:11` | HttpClient 4.5.13 -> highest eligible safe 4.x routine; historically 4.5.14, which requests higher HttpCore. | Judge resolved advisories, no fixed security unit expected for this graph. | A's actual resolved graph is scanned. Keep this configuration independent of the other fixtures. |
 | Ordinary B | `declared-lower.gradle.kts:19` | Plan HttpCore from DECLARED 4.4.10, not resolved 4.4.13. Routine target is highest eligible safe 4.x, historically 4.4.16. | An overridden-away lower declaration is not itself a finding; only the selected version is scanned. | Inventory :declaredLower should declare B 4.4.10 and resolve B 4.4.13. Gate judges 4.4.13, not absent 4.4.10. Exact-plan landing checks the declaration, without requiring resolution to equal it. |
-| A-only update | Same A/B lines above; change A to historically 4.5.14 and keep ordinary B 4.4.10 | Focused acceptance plan moves A only; normal weekly routine may combine A and B moves. | Resolved B fixes/new advisories follow normal security policy. | B resolves 4.4.13 -> 4.4.16 with its declaration unchanged. Direct/declaration verification MUST accept this resolved-only B change; gate still judges changed B 4.4.16 for age/advisories. |
+| A-only update | Same A/B lines above; change A to historically 4.5.14 and keep ordinary B 4.4.10 | Focused acceptance plan moves A only; a normal routine may combine A and B moves. | Resolved B fixes/new advisories follow normal security policy. | B resolves 4.4.13 -> 4.4.16 with its declaration unchanged. Direct/declaration verification MUST accept this resolved-only B change; gate still judges changed B 4.4.16 for age/advisories. |
 | Strict B, opt-in | `declared-lower.gradle.kts:15` and `declared-lower.gradle.kts:6` | This is a strict declaration, not an ineffective pin; update the strict version only if explicitly trialing that variant. | Judge the actual lower B 4.4.10 if it resolves; a vulnerability there is real. | Expected to FORCE 4.4.10 because A's transitive requirement is plain require. This variant is not expected to fail merely because A requests 4.4.13. If it does fail, inventory must fail closed/incomplete, not pass as clean. |
 
 Use two controlled acceptance heads against the same normal baseline, independently
-of the weekly combined routine:
+of the combined routine:
 
 1. **B-only below the transitive request:** a deliberately selected aged intermediate
    declaration 4.4.10 -> 4.4.12 still resolves 4.4.13. This is a verifier probe, not
@@ -119,9 +164,9 @@ of the weekly combined routine:
 2. **A-only:** update A 4.5.13 -> 4.5.14 with B's declaration still 4.4.10. Capture
    a focused plan and base/head inventories; declaration checks must see only A
    moved, while comparison sees B's resolved 4.4.13 -> 4.4.16. A resolved-only B
-   change is not an outside-plan DIRECT change and does not need pluginDriven.
+   change is not an outside-plan DIRECT change and needs no exemption.
 
-The actual weekly routine may move both A and B; that proves the combined path,
+An actual routine run may move both A and B; that proves the combined path,
 not the isolated A-only path. Do not claim all three paths ran from one combined
 PR. A-only verification needs a matching focused plan; a manual edit does not
 magically change the tool's existing plan. Use a local verifier probe or a focused
@@ -159,8 +204,8 @@ for Gradle, Central, OSV and GitHub. Set GITHUB_TOKEN only if required for priva
 Action metadata/rate limits; the helper does not print it.
 
 ```sh
-export SC_CHECKOUT="/Users/leandro.aguiar/dev/repos/leanish/wt-030"
-# For a post-release rerun, point SC_CHECKOUT at the actual v0.4.0 checkout instead.
+export SC_CHECKOUT="/path/to/supply-chain"
+# A checkout of the tool version under test, with its dependencies installed (v0.4.2 today).
 node scripts/case10-probes.mjs --prepare-only
 node scripts/case10-probes.mjs
 ```
@@ -192,18 +237,18 @@ All inventory configurations must resolve, including buildSrc. Inspect the
 verification passed. Generated files in ignored copies are not plan edits. The
 helper records only the one controlled script edit per focused plan; do not make
 manual edits in copies and reuse that assertion of changedFiles. Prepare a new
-probe set instead. Case 10 does not use the plugin-driven exemption, so B1/B2/B3
-are not an excuse for accepting an unplanned case-10 declaration change.
+probe set instead. Case 10 has no planned plugin move, so the plan-applied
+reference never excuses an unplanned case-10 declaration change.
 
 `VERIFY: CASE10-PROBES` — Run the full helper outside the socket-restricted sandbox
-against the v0.3.0 candidate and the shipped v0.3.0. Retain all five actual inventories, both
+against the tool version under test (v0.4.2 today). Retain all five actual inventories, both
 focused verification/compare reports and each variant's `*-reference-inventory.json`. Prepare-only and syntax checks do not prove
 resolution or a passing live gate.
 
 ## Run acceptance and evidence (cases 8–9 and deferred majors)
 
 EXPECTED.md is the single source of expectations. README.md contains setup and
-entry commands; VALIDATION.md and REGISTRY-EVIDENCE.json contain observed evidence.
+entry commands; VALIDATION.md contains observed evidence.
 Exact live targets, advisory counts, identities and release dates depend on the
 registry snapshot. A missing or too-young eligible candidate is timing-dependent,
 not proof that the fixture or tool failed. No young release is fabricated.
@@ -212,12 +257,12 @@ Run secure-it and bump-it independently against the same seeded main revision;
 capture evidence before merging either tool's PRs. Do not merge parent updates
 before testing transitive security fixes. Preserve the seed revision externally
 for repeat trials; after merges, do not expect the same candidates/findings.
-Unchanged weeks may review already-open PRs rather than create new ones.
+Later runs on an unchanged main may review already-open PRs rather than create new ones.
 
 bump-it's default maximum is **three new major PRs per run**, in addition to the
 routine unit. An eligible major can be deferred behind higher-priority packages,
-including Actions and the new glob direct dependency. An absent wordwrap,
-annotations, setup-java or other major PR is not a bug solely because it is absent.
+including Actions. An absent annotations, SLF4J, JUnit, checkout, setup-java
+or other major PR is not a bug solely because it is absent.
 Check the deployed limit and each unit's status/priority; distinguish deferred,
 already-open, held, failed, no eligible candidate and notes-only dependencies.
 Capture later runs (or a deliberately configured larger limit) to exercise every
@@ -240,10 +285,10 @@ acceptance. Judge every changed resolved artifact for advisories, age and identi
 Missing registry data/inventory coverage is incomplete, never a clean pass.
 
 `VERIFY: RUN-EVIDENCE` — Confirm the deployed maxNewMajorsPerRun value and retain
-all fields and failed-unit artifacts above in the next weekly report. Reconcile
+all fields and failed-unit artifacts above in the next candidate-pass report. Reconcile
 all cases against units, not only the published PR list.
 
-## supply-chain 0.3.0 verification
+## Gradle verification (current since supply-chain 0.3.0)
 
 | Behavior | Expected result |
 |---|---|
@@ -259,13 +304,16 @@ A passing dependency test alone does not prove remediation or reference equality
 
 ## C: Gradle parent remediation
 
+These seeds are consumed: main now has OkHttp 4.12.0. See
+[Active cases and consumed seeds](#active-cases-and-consumed-seeds) to re-seed them.
+
 | Variant | File/configuration | bump-it | secure-it | Gate / inventory |
 |---|---|---|---|---|
 | C: transitive only | build.gradle.kts, :okhttpSecurity, OkHttp 4.9.3 seed | Highest eligible aged safe OkHttp 4.x in routine; no direct Okio bump. | Move source-named OkHttp 4.9.3 -> 4.12.0, carrying the Okio GHSA-w33c-445m-f8w7 fix. No Okio floor for a successful search. | Baseline resolves vulnerable Okio 2.8.0. Reference/head resolve the fixed JVM graph at 3.6.0 and contain no targeted advisory under either okio or okio-jvm. |
 | C: combined own and transitive | Separate seed commit changing only OkHttp to 4.9.1 | Normal direct update rules. | One OkHttp 4.9.1 -> 4.12.0 declaration move fixes its own GHSA-3cqm-mf7h-prrj and carries the Okio fix. Do not stop at the own-only 4.9.2 target. | Same complete JVM inventory and reference checks; both advisory groups disappear. |
 | C: search bounds | Reference resolutions for :okhttpSecurity | Not a routine candidate-depth assertion. | Lowest aged eligible parent first; no more than six reference probes for a vulnerable module. A failed/spent search retains a floor with a note. | Retain attempted parent versions and actual reference inventories; a seventh probe is a regression. |
 
-### Seed of 2026-10-11: combined OkHttp and plugin move plus floor
+### Seed of 2026-10-11: combined OkHttp and plugin move plus floor (consumed by #12)
 
 The 4.9.3 baseline above was run first (leanish/supply-chain_TEST_gradle#12 at
 seed 3078549). This seed changes only OkHttp to 4.9.1 and adds
@@ -306,17 +354,12 @@ declaration then supplies the fixed BeanUtils version, and the separate
 floor-removal PR must establish jointly that the floor became redundant.
 
 Done 2026-10-11: secure-it's floor PR was #12 (merged as edccc9f); the
-controlled commit follows it. Expected next: secure-it opens a separate
+controlled commit 37eecec follows it. Expected next: secure-it opens a separate
 floor-removal PR dropping only the because-declaration and the BeanUtils record
 (the kotlin-gradle-plugin floor stays), proved jointly with unlocked resolution.
 
-Observed 2026-10-11 with candidate supply-chain f8dc43f: #12 (seed ab614a7)
-moved OkHttp 4.9.1 -> 4.12.0 (own GHSA-3cqm-mf7h-prrj plus carried Okio and
-Kotlin stdlib) and grgit 5.3.0 -> 5.3.2 (carried JGit) in one security unit with
-the BeanUtils and kotlin-gradle-plugin floors; gate green. After the controlled
-commit 37eecec, #13 removes the BeanUtils floor alone; the kotlin-gradle-plugin
-floor is retained because unlocked resolution restores 2.1.20 (GHSA-r937-wjx7-w2jp).
-Earlier candidates failed that probe on Gradle 9 (fixed in supply-chain#68).
+The observed runs (#12 merged, #13 open) are recorded in
+[VALIDATION.md](VALIDATION.md#parent-first-plugin-move-and-floor-runs--2026-10-11).
 
 For each independent seed and remediation head:
 
@@ -339,9 +382,15 @@ the behaviour the tests assert: deleting a test, the annotation or the YAML load
 | Case | File/line | bump-it | secure-it | Gate |
 |---|---|---|---|---|
 | 11: JUnit major breaks a test | `src/test/java/example/fixture/OrderedTest.java` (`MethodOrderer.Alphanumeric`, removed in JUnit 6.0; JUnit's default order runs `beta` first, so the asserted order needs an orderer) | Open #9 (junit-jupiter 5.11.0 -> 6.1.3) merges the new base cleanly, then its Build fails at `compileTestJava`; the next review runs the agent in `adapt` with that failing check and switches to `MethodOrderer.MethodName` (or an equivalent that keeps the asserted order), then marks it ready once green. #9 started this case at `adaptations=1` of 2, so it has one attempt. #7 (junit-platform-launcher -> 6.1.3) compiles but fails at test runtime (the BOM raises Jupiter on the runtime classpath only); expect the same adapt path or a visible failure. Don't merge #7 or #9 before collecting both outcomes. | No advisory expected. | Inventory/compare don't compile sources: require the Build check separately. |
-| 12: security fix only in a new major | `src/main/java/example/fixture/FixtureYaml.java` (`new Constructor(FixtureConfig.class)`), `build.gradle.kts` (`org.yaml:snakeyaml:1.33`) | Also a future major candidate (1.33 -> newest aged 2.x); not part of this case. | CVE-2022-1471 / GHSA-mjmj-j48q-9wg2 affects <=1.33 and is fixed only in 2.0 (lowest fix). One major security PR to 2.0 whose agent, in `apply` with major effort, adapts the constructor to `Constructor(FixtureConfig.class, new LoaderOptions())` (that overload exists in 1.33 too) and keeps `FixtureYamlTest` green. This covers adaptation during the initial apply; review-mode `adapt` for secure-it would need a dependency-only major PR first and the break landing on main afterwards (not seeded). | Main's scheduled scan reports the SnakeYAML advisory until the fix lands; the fix PR must clear it at every location, with unrelated findings inherited. Require the Build check too. |
+| 12: security fix only in a new major | `src/main/java/example/fixture/FixtureYaml.java` (`new Constructor(FixtureConfig.class)`), `build.gradle.kts` (`org.yaml:snakeyaml:1.33`) | Also a future major candidate (1.33 -> newest aged 2.x); not part of this case. | CVE-2022-1471 / GHSA-mjmj-j48q-9wg2 affects <=1.33 and is fixed only in 2.0 (lowest fix). One major security PR to 2.0 whose agent, in `apply` with major effort, adapts the constructor to `Constructor(FixtureConfig.class, new LoaderOptions())` (that overload exists in 1.33 too) and keeps `FixtureYamlTest` green. This covers adaptation during the initial apply; review-mode `adapt` for secure-it is case 17 below. | Main's default-branch scan (push or manual dispatch) reports the SnakeYAML advisory until the fix lands; the fix PR must clear it at every location, with unrelated findings inherited. Require the Build check too. |
 
 Probe evidence for the seed is in [VALIDATION.md](VALIDATION.md#cases-1112-seed--2026-10-12).
 Advisory and release dates: [GHSA-mjmj-j48q-9wg2](https://github.com/advisories/GHSA-mjmj-j48q-9wg2);
 SnakeYAML 1.33 2022-09-26, 2.0 2023-02-26; `MethodOrderer.Alphanumeric` is absent from
 junit-jupiter-api 6.1.3.
+
+## Case 17: secure-it adapts code during review (seeded 2026-10-12)
+
+| Case | File | bump-it | secure-it | Gate |
+|---|---|---|---|---|
+| 17: break lands after the security major | `src/main/java/example/fixture/FixtureYamlDump.java` (`new Representer()`, removed in SnakeYAML 2.0) + `FixtureYamlDumpTest` | Not involved. | Open #14 (case 12: snakeyaml 1.33 -> 2.0, adapted at apply, `adaptations=0` of 2 before this seed) merges the new base cleanly (the seed touches only new files), then fails `compileJava` (`constructor Representer … cannot be applied`); the next secure-it review runs the agent in `adapt` and switches to `new Representer(options)` keeping the dumped YAML asserted; #14 is already ready (not a draft), so a green review reports `already-ready`. Expected sequence: `rebased` → red Build → `adapted` → green → `already-ready`. | Require the Build check; compare/inventory don't compile. |
