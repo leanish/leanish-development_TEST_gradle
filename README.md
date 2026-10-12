@@ -1,8 +1,9 @@
 # Gradle declarations and security fixture
 
-Synthetic fixture covering cases 2, 3, 4, 5, 6, 8, 9 and 10: literals, a version
+Synthetic fixture covering cases 2, 3, 4, 5, 6, 8, 9, 10, 11 and 12: literals, a version
 catalog, a buildSrc convention, Kotlin DSL, independent security configurations,
-a wrapper, pinned Actions and ordinary/strict declared-lower dependencies.
+a wrapper, pinned Actions, ordinary/strict declared-lower dependencies, and majors
+(bump-it and secure-it) whose upgrade needs source adaptation.
 
 ```sh
 ./gradlew --no-daemon check
