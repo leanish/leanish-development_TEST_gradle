@@ -68,8 +68,8 @@ current main can't reproduce them.
 | 4: Text plus carried Lang | 315fb0c: Text 1.9 | Text 1.14.0 |
 | 4: Configuration plus carried Lang | 315fb0c: Configuration 2.11.0 | Configuration 2.15.0 |
 | 4: real floor fallback | 3078549: Digester 3.2 | Plain BeanUtils 1.11.0 (37eecec) plus #12's BeanUtils floor |
-| C: transitive only | 3078549: OkHttp 4.9.3 | OkHttp 4.12.0 |
-| C: combined own and transitive | ab614a7: OkHttp 4.9.1 | OkHttp 4.12.0 |
+| C: transitive only | 3078549: OkHttp 4.9.3 | OkHttp 5.5.0 |
+| C: combined own and transitive | ab614a7: OkHttp 4.9.1 | OkHttp 5.5.0 |
 | Plugin move plus floor | ab614a7: grgit 5.3.0 | grgit 5.3.2 plus #12's Kotlin Gradle plugin floor |
 
 To re-seed them on main:
@@ -304,7 +304,7 @@ A passing dependency test alone does not prove remediation or reference equality
 
 ## C: Gradle parent remediation
 
-These seeds are consumed: main now has OkHttp 4.12.0. See
+These seeds are consumed: main now has OkHttp 5.5.0. See
 [Active cases and consumed seeds](#active-cases-and-consumed-seeds) to re-seed them.
 
 | Variant | File/configuration | bump-it | secure-it | Gate / inventory |
