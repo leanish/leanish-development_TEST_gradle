@@ -13,9 +13,9 @@ public final class FixtureYamlDump {
     private FixtureYamlDump() {}
 
     public static String dump(FixtureConfig config) {
-        Representer representer = new Representer();
-        representer.addClassTag(FixtureConfig.class, Tag.MAP);
         DumperOptions options = new DumperOptions();
+        Representer representer = new Representer(options);
+        representer.addClassTag(FixtureConfig.class, Tag.MAP);
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
         return new Yaml(representer, options).dump(config);
     }
