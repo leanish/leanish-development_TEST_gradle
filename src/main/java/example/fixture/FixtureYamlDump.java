@@ -13,10 +13,10 @@ public final class FixtureYamlDump {
     private FixtureYamlDump() {}
 
     public static String dump(FixtureConfig config) {
-        Representer representer = new Representer();
-        representer.addClassTag(FixtureConfig.class, Tag.MAP);
         DumperOptions options = new DumperOptions();
         options.setDefaultFlowStyle(DumperOptions.FlowStyle.BLOCK);
+        Representer representer = new Representer(options);
+        representer.addClassTag(FixtureConfig.class, Tag.MAP);
         return new Yaml(representer, options).dump(config);
     }
 }
