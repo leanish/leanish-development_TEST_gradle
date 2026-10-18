@@ -33,4 +33,5 @@ do not publish packages. Claude manages GitHub adoption and the run configuratio
 This fixture isn't part of regular tool passes: it runs only in release-candidate
 passes that opt fixtures in (`SUPPLY_CHAIN_FIXTURES=1`).
 The gate is pinned to leanish-development v0.6.1 and uses the same commit for inventory
-and comparison; the tools are at v0.4.2. EXPECTED.md has the pin history.
+and comparison. Tools are deployed separately; record their release/commit for each trial.
+EXPECTED.md has the pin history.
