@@ -32,5 +32,6 @@ records checks and tool runs already performed. These private repositories are t
 do not publish packages. Claude manages GitHub adoption and the run configuration.
 This fixture isn't part of regular tool passes: it runs only in release-candidate
 passes that opt fixtures in (`SUPPLY_CHAIN_FIXTURES=1`).
-The gate is pinned to supply-chain v0.4.0 and uses the same commit for inventory
-and comparison; the tools are at v0.4.2. EXPECTED.md has the pin history.
+The gate is pinned to leanish-development v0.6.1 and uses the same commit for inventory
+and comparison. Tools are deployed separately; record their release/commit for each trial.
+EXPECTED.md has the pin history.
