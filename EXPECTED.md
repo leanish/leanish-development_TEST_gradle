@@ -112,15 +112,11 @@ registry outcomes, not fixed to the illustrative versions below. npm identity,
 source or provenance breaks can block an otherwise safe version.
 
 Gate trials use the same supply-chain commit for inventory and comparison.
-The gate is pinned to leanish-development v0.6.1
-(668b5c4973fc55c9d0f8f341b70cd7889e05b1e9, 2026-10-18). It runs on pull requests,
-pushes to main and manual dispatch. It has no schedule (removed 2026-10-12) and,
-since v0.4.0, no open-PR rescan. Tools are deployed separately; record the actual
-release/commit for each trial. Tool-only releases do not require a gate repin.
-The previous gate was v0.4.0 (1c236638041cc479ac067b2a4b6143f0e6c2bace, 2026-10-11).
-Earlier trials used v0.3.0
-(20711928aa3074093cdcc8080767c56b1223ae01) and the candidate commit 87b1e9e,
-unreachable since its branch was merged.
+The gate's pin is the `uses:` line in `.github/workflows/supply-chain.yml` (its
+history is in git); `fixture-repin` moves it after each stable release. It runs on
+pull requests, pushes to main and manual dispatch. It has no schedule (removed
+2026-10-12) and, since v0.4.0, no open-PR rescan. Tools are deployed separately;
+record the actual release/commit for each trial.
 
 `VERIFY: ACTIONS` — Confirm each exact SHA/tag pair and published release date via
 GitHub (dereference annotated tags). Baseline checkout v4.1.1 is
