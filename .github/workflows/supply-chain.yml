@@ -2,17 +2,19 @@ name: supply-chain
 
 on:
   pull_request:
-    types: [opened, synchronize, reopened, edited]
+    types: [ opened, synchronize, reopened, edited ]
   push:
-    branches: [main]
+    branches: [ main ]
   workflow_dispatch:
 
+  schedule:
+    - cron: 17 5 * * *
 permissions:
   contents: read
 
 jobs:
   supply-chain:
-    uses: leanish/leanish-development/.github/workflows/supply-chain.yml@668b5c4973fc55c9d0f8f341b70cd7889e05b1e9 # v0.6.1
+    uses: leanish/leanish-development/.github/workflows/supply-chain.yml@c2739ec90401ea9ff08168b9f00b349c7f91cc5e # v0.7.0-rc.1
     permissions:
       contents: read
     with:
