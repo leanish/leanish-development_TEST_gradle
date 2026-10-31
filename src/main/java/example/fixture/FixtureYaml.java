@@ -1,16 +1,17 @@
 package example.fixture;
 
+import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.Constructor;
 
 /**
- * Case 12: uses SnakeYAML 1.x's single-argument {@code Constructor(Class)}, which 2.0 removed.
- * The only fix for CVE-2022-1471 is 2.0, so secure-it's upgrade has to adapt this code.
+ * Case 12 adapts SnakeYAML 2.0's removal of {@code Constructor(Class)} by providing loader options.
+ * This constructor overload also exists in 1.33, the original baseline.
  */
 public final class FixtureYaml {
     private FixtureYaml() {}
 
     public static FixtureConfig load(String yaml) {
-        return new Yaml(new Constructor(FixtureConfig.class)).load(yaml);
+        return new Yaml(new Constructor(FixtureConfig.class, new LoaderOptions())).load(yaml);
     }
 }
