@@ -302,7 +302,7 @@ A passing dependency test alone does not prove remediation or reference equality
 
 ## C: Gradle parent remediation
 
-These seeds are consumed: main now has OkHttp 4.12.0. See
+These seeds are consumed: main moved past them to OkHttp 4.12.0 and now has OkHttp 5.5.1. See
 [Active cases and consumed seeds](#active-cases-and-consumed-seeds) to re-seed them.
 
 | Variant | File/configuration | bump-it | secure-it | Gate / inventory |
