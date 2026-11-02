@@ -1,6 +1,6 @@
 {
   "releaseAgeDays": 7,
-  "ownPackages": {
+  "trustedPackages": {
     "GitHub Actions": {
       "owners": [
         "leanish"
