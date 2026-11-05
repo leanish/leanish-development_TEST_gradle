@@ -12,7 +12,7 @@ permissions:
 
 jobs:
   supply-chain:
-    uses: leanish/leanish-development/.github/workflows/supply-chain.yml@9fbf107143150adf67a1b074bac6a9a46093940f # v0.11.0-rc.6
+    uses: leanish/leanish-development/.github/workflows/supply-chain.yml@73a55887ac2f54498d77620b03db34024af7df1d # v0.11.0-rc.26
     permissions:
       contents: read
     with:
